@@ -1,0 +1,42 @@
+{
+  "name": "state-manager",
+  "version": "0.1.0",
+  "description": "A JavaScript library for creating Web Components.",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/state-manager.umd.js",
+  "module": "./dist/state-manager.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/state-manager.es.js",
+      "require": "./dist/state-manager.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mishieck/state-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mishieck/state-manager/issues"
+  },
+  "homepage": "https://github.com/Mishieck/state-manager#readme",
+  "devDependencies": {
+    "@types/node": "^18.7.15",
+    "@vitest/coverage-c8": "^0.23.1",
+    "jsdom": "^20.0.0",
+    "typescript": "^4.8.2",
+    "vite": "^3.1.0",
+    "vitest": "^0.23.1"
+  }
+}
