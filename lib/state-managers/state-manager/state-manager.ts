@@ -4,7 +4,7 @@ interface IStateOption {
 }
 
 interface IStateObserver {
-  (state: string): void | Promise<void>;
+  (stateManager: IStateManager): void | Promise<void>;
 }
 
 interface IStateObservers {
@@ -147,7 +147,7 @@ class StateManager implements IStateManager {
       Failed to notify observers. State ${state} is not registered.
     `);
 
-    for (const observer of observers) observer(state);
+    for (const observer of observers) observer(this);
   }
 }
 
