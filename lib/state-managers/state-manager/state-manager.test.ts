@@ -8,7 +8,8 @@ describe('StateManager class', () => {
       states: [
         { name: 'red' },
         {
-          name: 'blue',}
+          name: 'blue'
+        }
       ]
     });
 
@@ -26,7 +27,7 @@ describe('StateManager class', () => {
           name: 'blue',
           observers: [
             (color) => {
-              currentColor = color;
+              currentColor = color.current;
             }
           ]
         }
