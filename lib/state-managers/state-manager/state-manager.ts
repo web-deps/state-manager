@@ -11,7 +11,7 @@ interface IStateObservers {
   [state: string]: Array<IStateObserver>;
 }
 
-interface IContextOption {
+interface IStateContextOption {
   name: string;
   states: Array<IStateOption>;
 }
@@ -35,7 +35,7 @@ interface IStateManagerOptions {
   name?: string;
   states?: Array<IStateOption>;
   initialState: string;
-  contexts?: Array<IContextOption>;
+  contexts?: Array<IStateContextOption>;
   context?: string;
   saveHistory?: boolean;
 }
@@ -156,5 +156,7 @@ export type {
   IStateManager,
   IStateManagerOptions,
   IStateObservers,
-  IStateOption
+  IStateOption,
+  IStateContextOption,
+  IStateObserver
 };
