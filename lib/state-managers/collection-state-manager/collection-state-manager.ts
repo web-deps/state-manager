@@ -319,6 +319,7 @@ class CollectionStateManager {
     const itemIndex = this.currentCombination.indexOf(oldItem);
     if (!itemIndex) return;
     let items = [...this.currentCombination].splice(itemIndex, 1, newItem);
+    this.setCombination(items);
   }
 
   popItem() {
