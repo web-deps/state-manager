@@ -1,17 +1,52 @@
-import type { IStateManager } from '../state-manager/state-manager';
+import type {
+  IStateManager,
+  IStateOption
+} from '../state-manager/state-manager';
 
-interface ICollectionStateManager extends IStateManager {
+interface ICollectionStateObserver {
+  (collectionStateManager: ICollectionStateManager): void;
+}
+
+interface ICollectionStateObservers {
+  [state: string]: ICollectionStateObserver;
+}
+
+interface ICollectionStateCombination {
+  state: string;
+  items: Array<string>;
+}
+
+interface ICombinationMatcher {
+  (combination: Array<string>): boolean;
+}
+
+interface ICollectionStateOption {
+  name: string;
+  combination: Array<string>;
+  observers: Array<ICollectionStateObserver>;
+}
+
+interface ICollectionStateManager {
+  readonly name: string;
+  readonly stateManager: IStateManager;
+  readonly current: string;
   readonly currentCombination: Array<string>;
   readonly ordered: boolean;
   readonly fixedSize: boolean;
   readonly size?: number;
-  readonly combinations: Array<{
-    state: string;
-    combination: Array<string>;
-  }>;
-  matchesWithOrder: (combination: Array<string>) => boolean;
-  matchesWithoutOrder: (combination: Array<string>) => boolean;
-  matches: (combination: Array<string>) => boolean;
+  readonly observers: ICollectionStateObservers;
+  readonly combinations: Array<ICollectionStateCombination>;
+  createStateManagerStates: (
+    states: Array<ICollectionStateOption>
+  ) => Array<IStateOption>;
+  setState: (state: string) => void;
+  setCombination: (combination: Array<string>) => void;
+  addObserver: (state: string, observer: ICollectionStateObserver) => void;
+  removeObserver: (state: string, observer: ICollectionStateObserver) => void;
+  notifyObservers: (state: string) => void;
+  matchesWithOrder: ICombinationMatcher;
+  matchesWithoutOrder: ICombinationMatcher;
+  matches: ICombinationMatcher;
   appendItem: (item: string) => void;
   prependItem: (item: string) => void;
   removeItem: (item: string) => void;
