@@ -25,7 +25,7 @@ interface ICombinationMatcher {
 interface ICollectionStateOption {
   name: string;
   combination: Array<string>;
-  observers: Array<ICollectionStateObserver>;
+  observers?: Array<ICollectionStateObserver>;
 }
 
 interface ICollectionStateSuspenseHandler {
@@ -99,6 +99,7 @@ class CollectionStateManager {
       states,
       contexts,
       context,
+      initialState,
       ordered,
       size,
       onSuspense,
@@ -139,10 +140,12 @@ class CollectionStateManager {
     }
 
     this.collection = this.createCollection(this.combinations);
+    this.currentCombination = this.combinations[initialState];
 
     this.stateManager = new StateManager({
       name,
       states: stateManagerStates,
+      initialState,
       ...stateManagerOptions
     });
   }
@@ -197,7 +200,7 @@ class CollectionStateManager {
     for (const [state, stateCombination] of Object.entries(this.combinations)) {
       if (this.matchesCombination(combination, stateCombination)) {
         this.currentCombination = combination;
-        this.current = state;
+        this.stateManager.current = state;
         found = true;
         break;
       }
@@ -260,7 +263,10 @@ class CollectionStateManager {
 
   notifyObservers(stateManager: IStateManager) {
     const observers = this.observers[this.stateManager.current];
-    for (const observer of observers) observer(this);
+
+    if (observers) {
+      for (const observer of observers) observer(this);
+    }
   }
 
   appendItem(item: string) {
@@ -296,8 +302,9 @@ class CollectionStateManager {
     }
 
     const items = this.currentCombination.filter(
-      (currentItem) => currentItem == item
+      (currentItem) => currentItem != item
     );
+
     this.setCombination(items);
   }
 
@@ -317,9 +324,15 @@ class CollectionStateManager {
     }
 
     const itemIndex = this.currentCombination.indexOf(oldItem);
-    if (!itemIndex) return;
-    let items = [...this.currentCombination].splice(itemIndex, 1, newItem);
-    this.setCombination(items);
+    console.log(itemIndex);
+
+    if (itemIndex > -1) {
+      console.log(this.currentCombination);
+      let items = [...this.currentCombination];
+      items.splice(itemIndex, 1, newItem);
+      console.log(items);
+      this.setCombination(items);
+    }
   }
 
   popItem() {
@@ -369,4 +382,5 @@ class CollectionStateManager {
   }
 }
 
+export default CollectionStateManager;
 export type { ICollectionStateManager };
