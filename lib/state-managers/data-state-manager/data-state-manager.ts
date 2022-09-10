@@ -8,7 +8,7 @@ import type {
 interface IDataStateOption<TData> {
   name: string;
   matches: (data: TData) => boolean;
-  observers: Array<IStateObserver>;
+  observers?: Array<IStateObserver>;
 }
 
 interface IDataStateObserver<TData> {
@@ -52,8 +52,8 @@ interface IDataStateContextOption<TData> {
 
 interface IDataStateOptions<TData>
   extends Omit<IStateManagerOptions, 'states' | 'contexts'> {
-  states: Array<IDataStateOption<TData>>;
-  contexts: Array<IDataStateContextOption<TData>>;
+  states?: Array<IDataStateOption<TData>>;
+  contexts?: Array<IDataStateContextOption<TData>>;
   initialData: TData;
 }
 
@@ -138,7 +138,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 
     for (const { state, matches } of this.tests) {
       if (matches(data)) {
-        this.notifyObservers(state);
+        this.current = state;
         break;
       }
     }
@@ -171,7 +171,10 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 
   notifyObservers(state: string) {
     const observers = this.observers[state];
-    for (const observer of observers) observer(this);
+
+    if (observers) {
+      for (const observer of observers) observer(this);
+    }
   }
 }
 
