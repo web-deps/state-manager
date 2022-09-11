@@ -28,6 +28,10 @@ interface IDataTestItem<TData> {
   matches: IDataTester<TData>;
 }
 
+interface IDataUpdateHandler<TData> {
+  (data: TData): void;
+}
+
 interface IDataStateManager<TData> {
   name: string;
   stateManager: IStateManager;
@@ -43,7 +47,7 @@ interface IDataStateManager<TData> {
   addObserver: (state: string, observer: IDataStateObserver<TData>) => void;
   removeObserver: (state: string, observer: IDataStateObserver<TData>) => void;
   update: (data: TData) => void;
-  onUpdate?: (data: TData) => void;
+  onUpdate?: IDataUpdateHandler<TData>;
 }
 
 interface IDataStateContextOptions<TData> {
@@ -55,6 +59,7 @@ interface IDataStateOptions<TData>
   states?: Array<IDataStateOption<TData>>;
   contexts?: IDataStateContextOptions<TData>;
   initialData: TData;
+  onUpdate?: IDataUpdateHandler<TData>;
 }
 
 class DataStateManager<TData> implements IDataStateManager<TData> {
@@ -63,6 +68,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
   public readonly context?: string;
   public tests: Array<IDataTestItem<TData>> = [];
   observers: IDataStateObservers<TData> = {};
+  public onUpdate?: IDataUpdateHandler<TData>;
 
   constructor(options: IDataStateOptions<TData>) {
     let {
@@ -71,10 +77,13 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
       contexts,
       context,
       initialData,
+      onUpdate,
       ...stateManagerOptions
     } = options;
+
     this.currentData = initialData;
     let stateManagerStates: IStateManagerOptions['states'];
+    if (onUpdate) this.onUpdate = onUpdate;
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
@@ -145,10 +154,13 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
   }
 
   update(data: TData) {
+    if (data == this.currentData) return;
     this.currentData = data;
+    this.onUpdate && this.onUpdate(data);
 
     for (const { state, matches } of this.tests) {
       if (matches(data)) {
+        if (state == this.current) return;
         this.current = state;
         break;
       }
