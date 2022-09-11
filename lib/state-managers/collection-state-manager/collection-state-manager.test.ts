@@ -46,6 +46,7 @@ describe('CollectionStateManager class initialization', () => {
 
     expect(textFormat.current).toBe('underline');
     expect(textFormat.currentCombination).toEqual(['underline']);
+    expect(textFormat.context).toBe('underline-supported');
   });
 });
 
@@ -177,3 +178,5 @@ describe('CollectionStateManager suspense', () => {
     expect(suspenseCombination).toEqual(['italic', 'bold']);
   });
 });
+
+// TODO: test observers
