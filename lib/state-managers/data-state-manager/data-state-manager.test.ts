@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import DataStateManager from './data-state-manager';
+import type {
+  IDataStateObserver,
+  IDataStateOption
+} from './data-state-manager';
 
-const volumeStates = [
+let volumeStates = [
   {
     name: 'low',
     matches: (value: number) => value < 80
@@ -88,5 +92,82 @@ describe('DataStateManager data updates', () => {
     volume.update(40);
     expect(volume.current).toBe('low');
     expect(volume.currentData).toBe(40);
+  });
+});
+
+describe('DataStateManager observers', () => {
+  it('observes DataStateManager states with one observer per state', () => {
+    let observerFlags = { low: false, high: false };
+    let volumeStatesWithObservers = volumeStates.map<IDataStateOption<number>>(
+      ({ name, matches }) => ({ name, matches })
+    );
+
+    const lowVolumeObserver: IDataStateObserver<number> = (
+      dataStateManager
+    ) => {
+      observerFlags.low = true;
+    };
+
+    const highVolumeObserver: IDataStateObserver<number> = (
+      dataStateManager
+    ) => {
+      observerFlags.high = true;
+    };
+
+    volumeStatesWithObservers[0].observers = [lowVolumeObserver];
+    volumeStatesWithObservers[1].observers = [highVolumeObserver];
+
+    const volume = new DataStateManager<number>({
+      initialState: 'low',
+      initialData: 50,
+      states: volumeStatesWithObservers
+    });
+
+    expect(volume.current).toBe('low');
+    expect(volume.currentData).toBe(50);
+    expect(observerFlags.low).toBe(false);
+    volume.update(90);
+    expect(observerFlags.high).toBe(true);
+    volume.update(50);
+    expect(observerFlags.low).toBe(true);
+  });
+
+  it('observes DataStateManager states with two observers on one of the states', () => {
+    let observerFlags = { low: 0, high: 0 };
+    let volumeStatesWithObservers = volumeStates.map<IDataStateOption<number>>(
+      ({ name, matches }) => ({ name, matches })
+    );
+
+    const lowVolumeObserver: IDataStateObserver<number> = (
+      dataStateManager
+    ) => {
+      observerFlags.low++;
+    };
+
+    const highVolumeObserver: IDataStateObserver<number> = (
+      dataStateManager
+    ) => {
+      observerFlags.high++;
+    };
+
+    volumeStatesWithObservers[0].observers = [lowVolumeObserver];
+    volumeStatesWithObservers[1].observers = [
+      highVolumeObserver,
+      highVolumeObserver
+    ];
+
+    const volume = new DataStateManager<number>({
+      initialState: 'low',
+      initialData: 50,
+      states: volumeStatesWithObservers
+    });
+
+    expect(volume.current).toBe('low');
+    expect(volume.currentData).toBe(50);
+    expect(observerFlags.low).toBe(0);
+    volume.update(90);
+    expect(observerFlags.high).toBe(2);
+    volume.update(50);
+    expect(observerFlags.low).toBe(1);
   });
 });
