@@ -202,4 +202,4 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 }
 
 export default DataStateManager;
-export type { IDataStateManager };
+export type { IDataStateManager, IDataStateObserver };
