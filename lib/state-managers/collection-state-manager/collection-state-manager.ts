@@ -46,6 +46,7 @@ interface ICollectionStateManager {
   readonly observers: ICollectionStateObservers;
   readonly combinations: ICollectionStateCombinations;
   readonly collection: Set<string>;
+  readonly inSuspense: boolean;
   createStateManagerStates: (
     states: Array<ICollectionStateOption>
   ) => Array<IStateOption>;
@@ -92,6 +93,7 @@ class CollectionStateManager {
   size?: number;
   combinations: ICollectionStateCombinations = {};
   collection: Set<string> = new Set();
+  inSuspense = false;
 
   constructor(options: ICollectionStateOptions) {
     const {
@@ -166,6 +168,7 @@ class CollectionStateManager {
     }
 
     this.currentCombination = this.combinations[state];
+    this.inSuspense = false;
     this.stateManager.current = state;
   }
 
@@ -200,13 +203,17 @@ class CollectionStateManager {
     for (const [state, stateCombination] of Object.entries(this.combinations)) {
       if (this.matchesCombination(combination, stateCombination)) {
         this.currentCombination = combination;
+        this.inSuspense = false;
         this.stateManager.current = state;
         found = true;
         break;
       }
     }
 
-    if (!found) this.onSuspense(this, combination);
+    if (!found) {
+      this.inSuspense = true;
+      this.onSuspense(this, combination);
+    }
   }
 
   matchesCombination(
