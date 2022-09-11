@@ -45,20 +45,18 @@ interface IDataStateManager<TData> {
   onUpdate?: (data: TData) => void;
 }
 
-interface IDataStateContextOption<TData> {
-  name: string;
-  states: Array<IDataStateOption<TData>>;
+interface IDataStateContextOptions<TData> {
+  [name: string]: Array<IDataStateOption<TData>>;
 }
 
 interface IDataStateOptions<TData>
   extends Omit<IStateManagerOptions, 'states' | 'contexts'> {
   states?: Array<IDataStateOption<TData>>;
-  contexts?: Array<IDataStateContextOption<TData>>;
+  contexts?: IDataStateContextOptions<TData>;
   initialData: TData;
 }
 
 class DataStateManager<TData> implements IDataStateManager<TData> {
-  name = 'DataStateManager';
   public stateManager: IStateManager;
   public currentData: TData;
   public tests: Array<IDataTestItem<TData>> = [];
@@ -66,14 +64,13 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 
   constructor(options: IDataStateOptions<TData>) {
     let {
-      name,
+      name = 'DataStateManager',
       states,
       contexts,
       context,
       initialData,
       ...stateManagerOptions
     } = options;
-    if (name) this.name = name;
     this.currentData = initialData;
     let stateManagerStates: IStateManagerOptions['states'];
 
@@ -91,7 +88,14 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
         `);
       }
 
-      const { states } = contexts.find(({ name }) => context) || {};
+      if (!(context in contexts)) {
+        throw new Error(`
+          Failed to create ${name}. 
+          Context ${context} was not found in options.contexts.
+        `);
+      }
+
+      const states = contexts[context];
 
       if (!states) {
         throw new Error(`
@@ -112,6 +116,10 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
       states: stateManagerStates,
       ...stateManagerOptions
     });
+  }
+
+  get name() {
+    return this.stateManager.name;
   }
 
   get current() {
