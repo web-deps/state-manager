@@ -40,6 +40,7 @@ interface ICollectionStateManager {
   readonly stateManager: IStateManager;
   readonly current: string;
   readonly currentCombination: Array<string>;
+  readonly context?: string;
   readonly ordered: boolean;
   readonly fixedSize: boolean;
   readonly size?: number;
@@ -88,6 +89,7 @@ class CollectionStateManager {
   public stateManager: IStateManager;
   currentCombination: Array<string> = [];
   observers: ICollectionStateObservers = {};
+  public readonly context?: string;
   ordered = false;
   fixedSize = false;
   size?: number;
@@ -132,6 +134,7 @@ class CollectionStateManager {
       }
 
       const states = contexts[context];
+      this.context = context;
       stateManagerStates = this.createStateManagerStates(states);
       this.combinations = this.createCombinations(states);
     } else {
