@@ -33,6 +33,7 @@ interface IDataStateManager<TData> {
   stateManager: IStateManager;
   current: string;
   readonly currentData: TData;
+  readonly context?: string;
   readonly tests: Array<IDataTestItem<TData>>;
   observers: IDataStateObservers<TData>;
   createStateManagerStates: (
@@ -59,6 +60,7 @@ interface IDataStateOptions<TData>
 class DataStateManager<TData> implements IDataStateManager<TData> {
   public stateManager: IStateManager;
   public currentData: TData;
+  public readonly context?: string;
   public tests: Array<IDataTestItem<TData>> = [];
   observers: IDataStateObservers<TData> = {};
 
@@ -104,6 +106,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
         `);
       }
 
+      this.context = context;
       stateManagerStates = this.createStateManagerStates(states);
       this.tests = states.map(({ name, matches }) => ({
         state: name,
