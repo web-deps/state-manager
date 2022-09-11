@@ -8,7 +8,7 @@ import type {
 interface IDataStateOption<TData> {
   name: string;
   matches: (data: TData) => boolean;
-  observers?: Array<IStateObserver>;
+  observers?: Array<IDataStateObserver<TData>>;
 }
 
 interface IDataStateObserver<TData> {
@@ -40,12 +40,15 @@ interface IDataStateManager<TData> {
   readonly context?: string;
   readonly tests: Array<IDataTestItem<TData>>;
   observers: IDataStateObservers<TData>;
+  createObservers: (
+    states: Array<IDataStateOption<TData>>
+  ) => IDataStateObservers<TData>;
   createStateManagerStates: (
     states: Array<IDataStateOption<TData>>
   ) => Array<IStateOption>;
-  stateManagerObserver: (tateManager: IStateManager) => void;
   addObserver: (state: string, observer: IDataStateObserver<TData>) => void;
   removeObserver: (state: string, observer: IDataStateObserver<TData>) => void;
+  notifyObservers: (stateManager: IStateManager) => void;
   update: (data: TData) => void;
   onUpdate?: IDataUpdateHandler<TData>;
 }
@@ -87,6 +90,8 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
+      this.observers = this.createObservers(states);
+
       this.tests = states.map(({ name, matches }) => ({
         state: name,
         matches
@@ -116,7 +121,9 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
       }
 
       this.context = context;
+      this.observers = this.createObservers(states);
       stateManagerStates = this.createStateManagerStates(states);
+
       this.tests = states.map(({ name, matches }) => ({
         state: name,
         matches
@@ -142,15 +149,23 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     this.stateManager.current = state;
   }
 
+  createObservers(
+    states: IDataStateOption<TData>[]
+  ): IDataStateObservers<TData> {
+    return states.reduce(
+      (allObservers, { name, observers }) => ({
+        ...allObservers,
+        [name]: observers
+      }),
+      {}
+    );
+  }
+
   createStateManagerStates<TData>(states: Array<IDataStateOption<TData>>) {
     return states.map(({ name }) => ({
       name,
-      observers: [(state: IStateManager) => {}]
+      observers: [this.notifyObservers.bind(this)]
     }));
-  }
-
-  stateManagerObserver(stateManager: IStateManager) {
-    this.notifyObservers(stateManager.current);
   }
 
   update(data: TData) {
@@ -192,8 +207,8 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     if (observerIndex > -1) observers.splice(observerIndex, 1);
   }
 
-  notifyObservers(state: string) {
-    const observers = this.observers[state];
+  notifyObservers(stateManager: IStateManager) {
+    const observers = this.observers[stateManager.current];
 
     if (observers) {
       for (const observer of observers) observer(this);
@@ -202,4 +217,4 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 }
 
 export default DataStateManager;
-export type { IDataStateManager, IDataStateObserver };
+export type { IDataStateManager, IDataStateObserver, IDataStateOption };
