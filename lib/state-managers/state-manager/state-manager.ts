@@ -11,9 +11,8 @@ interface IStateObservers {
   [state: string]: Array<IStateObserver>;
 }
 
-interface IStateContextOption {
-  name: string;
-  states: Array<IStateOption>;
+interface IStateContextOptions {
+  [name: string]: Array<IStateOption>;
 }
 
 interface IStateManager {
@@ -35,7 +34,7 @@ interface IStateManagerOptions {
   name?: string;
   states?: Array<IStateOption>;
   initialState: string;
-  contexts?: Array<IStateContextOption>;
+  contexts?: IStateContextOptions;
   context?: string;
   saveHistory?: boolean;
 }
@@ -68,10 +67,10 @@ class StateManager implements IStateManager {
     if (states) this.observers = this.createObservers(states);
     else if (contexts) {
       if (context) {
-        const contextOption = contexts.find(({ name }) => name == context);
+        const states = contexts[context];
 
-        if (contextOption) {
-          this.observers = this.createObservers(contextOption.states);
+        if (states) {
+          this.observers = this.createObservers(states);
           this.context = context;
         } else throw new Error(`Context ${context} is not listed in contexts.`);
       } else
@@ -157,6 +156,6 @@ export type {
   IStateManagerOptions,
   IStateObservers,
   IStateOption,
-  IStateContextOption,
+  IStateContextOptions,
   IStateObserver
 };
