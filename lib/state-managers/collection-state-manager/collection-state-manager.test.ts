@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import CollectionStateManager from './collection-state-manager';
+import type { ICollectionStateOption } from './collection-state-manager';
 
 let textFormatStates = [
   { name: 'normal', combination: ['normal'] },
@@ -124,6 +125,46 @@ describe('CollectionStateManager collection manipulation', () => {
   });
 });
 
+describe('CollectionStateManager observers', () => {
+  const observerFlags = { normal: false, bold: false };
+
+  let textFormatStatesWithObservers: Array<ICollectionStateOption> =
+    textFormatStates.map(({ name, combination }) => ({ name, combination }));
+
+  let normalState = textFormatStatesWithObservers.find(
+    ({ name }) => name == 'normal'
+  ) as ICollectionStateOption;
+
+  normalState.observers = [
+    () => {
+      observerFlags.normal = true;
+    }
+  ];
+
+  let boldState = textFormatStatesWithObservers.find(
+    ({ name }) => name == 'bold'
+  ) as ICollectionStateOption;
+
+  boldState.observers = [
+    () => {
+      observerFlags.bold = true;
+    }
+  ];
+
+  it('observes state changes', () => {
+    const textFormat = new CollectionStateManager({
+      initialState: 'normal',
+      states: textFormatStatesWithObservers
+    });
+
+    expect(observerFlags.normal).toBe(false);
+    textFormat.replaceItem('normal', 'bold');
+    expect(observerFlags.bold).toBe(true);
+    textFormat.replaceItem('bold', 'normal');
+    expect(observerFlags.normal).toBe(true);
+  });
+});
+
 describe('CollectionStateManager suspense', () => {
   it('puts CollectionStateManager in suspense with empty collection', () => {
     let suspenseCombination;
@@ -178,5 +219,3 @@ describe('CollectionStateManager suspense', () => {
     expect(suspenseCombination).toEqual(['italic', 'bold']);
   });
 });
-
-// TODO: test observers
