@@ -48,6 +48,9 @@ interface ICollectionStateManager {
   readonly combinations: ICollectionStateCombinations;
   readonly collection: Set<string>;
   readonly inSuspense: boolean;
+  createObservers: (
+    states: Array<ICollectionStateOption>
+  ) => ICollectionStateObservers;
   createStateManagerStates: (
     states: Array<ICollectionStateOption>
   ) => Array<IStateOption>;
@@ -117,6 +120,7 @@ class CollectionStateManager {
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
+      this.observers = this.createObservers(states);
       this.combinations = this.createCombinations(states);
     } else if (contexts) {
       if (!context) {
@@ -136,6 +140,7 @@ class CollectionStateManager {
       const states = contexts[context];
       this.context = context;
       stateManagerStates = this.createStateManagerStates(states);
+      this.observers = this.createObservers(states);
       this.combinations = this.createCombinations(states);
     } else {
       throw new Error(`
@@ -173,6 +178,18 @@ class CollectionStateManager {
     this.currentCombination = this.combinations[state];
     this.inSuspense = false;
     this.stateManager.current = state;
+  }
+
+  createObservers(
+    states: Array<ICollectionStateOption>
+  ): ICollectionStateObservers {
+    return states.reduce(
+      (allObservers, { name, observers }) => ({
+        ...allObservers,
+        [name]: observers
+      }),
+      {}
+    );
   }
 
   createStateManagerStates(
@@ -272,7 +289,7 @@ class CollectionStateManager {
   }
 
   notifyObservers(stateManager: IStateManager) {
-    const observers = this.observers[this.stateManager.current];
+    const observers = this.observers[stateManager.current];
 
     if (observers) {
       for (const observer of observers) observer(this);
@@ -334,13 +351,10 @@ class CollectionStateManager {
     }
 
     const itemIndex = this.currentCombination.indexOf(oldItem);
-    console.log(itemIndex);
 
     if (itemIndex > -1) {
-      console.log(this.currentCombination);
       let items = [...this.currentCombination];
       items.splice(itemIndex, 1, newItem);
-      console.log(items);
       this.setCombination(items);
     }
   }
@@ -393,4 +407,8 @@ class CollectionStateManager {
 }
 
 export default CollectionStateManager;
-export type { ICollectionStateManager };
+export type {
+  ICollectionStateManager,
+  ICollectionStateOption,
+  ICollectionStateOptions
+};
