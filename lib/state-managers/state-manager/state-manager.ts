@@ -234,5 +234,6 @@ export type {
   StateObserversInterface,
   StateOptionInterface,
   StateContextOptionsInterface,
-  StateObserverInterface
+  StateObserverInterface,
+  StateEvent
 };
