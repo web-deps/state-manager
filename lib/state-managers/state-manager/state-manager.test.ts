@@ -151,4 +151,44 @@ describe('StateManager observers', () => {
   });
 });
 
-// TODO: Add tests for previous state and history
+describe('StateManager history', () => {
+  it('change and track StateManager previous value', () => {
+    const color = new StateManager({
+      initialState: 'red',
+      states: colorStates
+    });
+
+    expect(color.previous).toBe(null);
+    color.current = 'blue';
+    expect(color.previous).toBe('red');
+    color.current = 'red';
+    expect(color.previous).toBe('blue');
+  });
+
+  it('should not change StateManager history', () => {
+    const color = new StateManager({
+      initialState: 'red',
+      states: colorStates
+    });
+
+    expect(color.history).toEqual([]);
+    color.current = 'blue';
+    expect(color.history).toEqual([]);
+    color.current = 'red';
+    expect(color.history).toEqual([]);
+  });
+
+  it('should change and track StateManager history', () => {
+    const color = new StateManager({
+      initialState: 'red',
+      states: colorStates,
+      saveHistory: true
+    });
+
+    expect(color.history).toEqual([]);
+    color.current = 'blue';
+    expect(color.history).toEqual(['red']);
+    color.current = 'red';
+    expect(color.history).toEqual(['red', 'blue']);
+  });
+});
