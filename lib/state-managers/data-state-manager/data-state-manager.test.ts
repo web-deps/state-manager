@@ -102,15 +102,11 @@ describe('DataStateManager observers', () => {
       DataStateOptionInterface<number>
     >(({ name, matches }) => ({ name, matches }));
 
-    const lowVolumeObserver: DataStateObserverInterface<number> = (
-      dataStateManager
-    ) => {
+    const lowVolumeObserver: DataStateObserverInterface<number> = () => {
       observerFlags.low = true;
     };
 
-    const highVolumeObserver: DataStateObserverInterface<number> = (
-      dataStateManager
-    ) => {
+    const highVolumeObserver: DataStateObserverInterface<number> = () => {
       observerFlags.high = true;
     };
 
@@ -138,15 +134,11 @@ describe('DataStateManager observers', () => {
       DataStateOptionInterface<number>
     >(({ name, matches }) => ({ name, matches }));
 
-    const lowVolumeObserver: DataStateObserverInterface<number> = (
-      dataStateManager
-    ) => {
+    const lowVolumeObserver: DataStateObserverInterface<number> = () => {
       observerFlags.low++;
     };
 
-    const highVolumeObserver: DataStateObserverInterface<number> = (
-      dataStateManager
-    ) => {
+    const highVolumeObserver: DataStateObserverInterface<number> = () => {
       observerFlags.high++;
     };
 

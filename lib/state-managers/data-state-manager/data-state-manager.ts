@@ -1,4 +1,5 @@
 import StateManager, {
+  StateEventInterface,
   StateOptionInterface
 } from '../state-manager/state-manager';
 import type {
@@ -13,8 +14,14 @@ interface DataStateOptionInterface<DataType> {
   observers?: Array<DataStateObserverInterface<DataType>>;
 }
 
+interface DataStateEventInterface<DataType> {
+  name: string;
+  dataStateManager: DataStateManagerInterface<DataType>;
+  data: DataType;
+}
+
 interface DataStateObserverInterface<DataType> {
-  (dataStateManager: DataStateManagerInterface<DataType>): void | Promise<void>;
+  (dataStateEvent: DataStateEventInterface<DataType>): void | Promise<void>;
 }
 
 interface DataStateObserversInterface<DataType> {
@@ -56,7 +63,7 @@ interface DataStateManagerInterface<DataType> {
     state: string,
     observer: DataStateObserverInterface<DataType>
   ) => void;
-  notifyObservers: (stateManager: StateManagerInterface) => void;
+  notifyObservers: StateObserverInterface;
   update: (data: DataType) => void;
   onUpdate?: DataUpdateHandlerInterface<DataType>;
 }
@@ -71,6 +78,22 @@ interface DataStateOptionsInterface<DataType>
   contexts?: DataStateContextOptionsInterface<DataType>;
   initialData: DataType;
   onUpdate?: DataUpdateHandlerInterface<DataType>;
+}
+
+class DataStateEvent<DataType> implements DataStateEventInterface<DataType> {
+  public readonly name: string;
+  public readonly dataStateManager: DataStateManagerInterface<DataType>;
+  public readonly data: DataType;
+
+  constructor(
+    name: string,
+    dataStateManager: DataStateManagerInterface<DataType>,
+    data: DataType
+  ) {
+    this.name = name;
+    this.dataStateManager = dataStateManager;
+    this.data = data;
+  }
 }
 
 class DataStateManager<DataType>
@@ -222,11 +245,14 @@ class DataStateManager<DataType>
     if (observerIndex > -1) observers.splice(observerIndex, 1);
   }
 
-  notifyObservers(stateManager: StateManagerInterface) {
+  notifyObservers(stateEvent: StateEventInterface) {
+    const { name, stateManager } = stateEvent;
     const observers = this.observers[stateManager.current];
 
     if (observers) {
-      for (const observer of observers) observer(this);
+      for (const observer of observers) {
+        observer(new DataStateEvent(name, this, this.currentData));
+      }
     }
   }
 }
@@ -235,5 +261,6 @@ export default DataStateManager;
 export type {
   DataStateManagerInterface,
   DataStateObserverInterface,
-  DataStateOptionInterface
+  DataStateOptionInterface,
+  DataStateEvent
 };
