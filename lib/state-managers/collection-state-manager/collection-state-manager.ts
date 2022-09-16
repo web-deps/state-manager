@@ -1,70 +1,78 @@
 import StateManager, {
-  IStateManagerOptions
+  StateManagerOptionsInterface
 } from '../state-manager/state-manager';
 import type {
-  IStateManager,
-  IStateOption
+  StateManagerInterface,
+  StateOptionInterface
 } from '../state-manager/state-manager';
 
-interface ICollectionStateObserver {
-  (collectionStateManager: ICollectionStateManager): void;
+interface CollectionStateObserverInterface {
+  (collectionStateManager: CollectionStateManagerInterface): void;
 }
 
-interface ICollectionStateObservers {
-  [state: string]: Array<ICollectionStateObserver>;
+interface CollectionStateObserversInterface {
+  [state: string]: Array<CollectionStateObserverInterface>;
 }
 
-interface ICollectionStateCombinations {
+interface CollectionStateCombinationsInterface {
   [state: string]: Array<string>;
 }
 
-interface ICombinationMatcher {
+interface CombinationMatcherInterface {
   (combination: Array<string>, target: Array<string>): boolean;
 }
 
-interface ICollectionStateOption {
+interface CollectionStateOptionInterface {
   name: string;
   combination: Array<string>;
-  observers?: Array<ICollectionStateObserver>;
+  observers?: Array<CollectionStateObserverInterface>;
 }
 
-interface ICollectionStateSuspenseHandler {
+interface CollectionStateSuspenseHandlerInterface {
   (
-    collectionStateManager: ICollectionStateManager,
+    collectionStateManager: CollectionStateManagerInterface,
     combination: Array<string>
   ): void | never;
 }
 
-interface ICollectionStateManager {
+interface CollectionStateManagerInterface {
   readonly name: string;
-  readonly stateManager: IStateManager;
+  readonly stateManager: StateManagerInterface;
   readonly current: string;
   readonly currentCombination: Array<string>;
   readonly context?: string;
   readonly ordered: boolean;
   readonly fixedSize: boolean;
   readonly size?: number;
-  readonly observers: ICollectionStateObservers;
-  readonly combinations: ICollectionStateCombinations;
+  readonly observers: CollectionStateObserversInterface;
+  readonly combinations: CollectionStateCombinationsInterface;
   readonly collection: Set<string>;
   readonly inSuspense: boolean;
   createObservers: (
-    states: Array<ICollectionStateOption>
-  ) => ICollectionStateObservers;
+    states: Array<CollectionStateOptionInterface>
+  ) => CollectionStateObserversInterface;
   createStateManagerStates: (
-    states: Array<ICollectionStateOption>
-  ) => Array<IStateOption>;
+    states: Array<CollectionStateOptionInterface>
+  ) => Array<StateOptionInterface>;
   createCombinations: (
-    states: Array<ICollectionStateOption>
-  ) => ICollectionStateCombinations;
-  createCollection: (combinations: ICollectionStateCombinations) => Set<string>;
+    states: Array<CollectionStateOptionInterface>
+  ) => CollectionStateCombinationsInterface;
+  createCollection: (
+    combinations: CollectionStateCombinationsInterface
+  ) => Set<string>;
   setCombination: (combination: Array<string>) => void;
-  addObserver: (state: string, observer: ICollectionStateObserver) => void;
-  removeObserver: (state: string, observer: ICollectionStateObserver) => void;
-  notifyObservers: (stateManager: IStateManager) => void;
-  matchesCombinationWithOrder: ICombinationMatcher;
-  matchesCombinationWithoutOrder: ICombinationMatcher;
-  matchesCombination: ICombinationMatcher;
+  addObserver: (
+    state: string,
+    observer: CollectionStateObserverInterface
+  ) => void;
+  removeObserver: (
+    state: string,
+    observer: CollectionStateObserverInterface
+  ) => void;
+  notifyObservers: (stateManager: StateManagerInterface) => void;
+  matchesCombinationWithOrder: CombinationMatcherInterface;
+  matchesCombinationWithoutOrder: CombinationMatcherInterface;
+  matchesCombination: CombinationMatcherInterface;
   appendItem: (item: string) => void;
   prependItem: (item: string) => void;
   removeItem: (item: string) => void;
@@ -72,35 +80,35 @@ interface ICollectionStateManager {
   popItem: () => void;
   shiftItems: (item?: string) => void;
   unshiftItems: (item?: string) => void;
-  onSuspense: ICollectionStateSuspenseHandler;
+  onSuspense: CollectionStateSuspenseHandlerInterface;
 }
 
-interface ICollectionStateContextOptions {
-  [context: string]: Array<ICollectionStateOption>;
+interface CollectionStateContextOptionsInterface {
+  [context: string]: Array<CollectionStateOptionInterface>;
 }
 
-interface ICollectionStateOptions
-  extends Omit<IStateManagerOptions, 'states' | 'contexts'> {
-  states?: Array<ICollectionStateOption>;
-  contexts?: ICollectionStateContextOptions;
+interface CollectionStateOptionsInterface
+  extends Omit<StateManagerOptionsInterface, 'states' | 'contexts'> {
+  states?: Array<CollectionStateOptionInterface>;
+  contexts?: CollectionStateContextOptionsInterface;
   ordered?: boolean;
   size?: number;
-  onSuspense?: ICollectionStateSuspenseHandler;
+  onSuspense?: CollectionStateSuspenseHandlerInterface;
 }
 
 class CollectionStateManager {
-  public stateManager: IStateManager;
+  public stateManager: StateManagerInterface;
   currentCombination: Array<string> = [];
-  observers: ICollectionStateObservers = {};
+  observers: CollectionStateObserversInterface = {};
   public readonly context?: string;
   ordered = false;
   fixedSize = false;
   size?: number;
-  combinations: ICollectionStateCombinations = {};
+  combinations: CollectionStateCombinationsInterface = {};
   collection: Set<string> = new Set();
   inSuspense = false;
 
-  constructor(options: ICollectionStateOptions) {
+  constructor(options: CollectionStateOptionsInterface) {
     const {
       name = 'CollectionStateManager',
       states,
@@ -116,7 +124,7 @@ class CollectionStateManager {
     if (ordered) this.ordered = ordered;
     if (size) this.size = size;
     if (onSuspense) this.onSuspense = onSuspense;
-    let stateManagerStates: Array<IStateOption>;
+    let stateManagerStates: Array<StateOptionInterface>;
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
@@ -181,8 +189,8 @@ class CollectionStateManager {
   }
 
   createObservers(
-    states: Array<ICollectionStateOption>
-  ): ICollectionStateObservers {
+    states: Array<CollectionStateOptionInterface>
+  ): CollectionStateObserversInterface {
     return states.reduce(
       (allObservers, { name, observers }) => ({
         ...allObservers,
@@ -193,8 +201,8 @@ class CollectionStateManager {
   }
 
   createStateManagerStates(
-    states: Array<ICollectionStateOption>
-  ): Array<IStateOption> {
+    states: Array<CollectionStateOptionInterface>
+  ): Array<StateOptionInterface> {
     return states.map(({ name }) => ({
       name,
       observers: [this.notifyObservers.bind(this)]
@@ -202,8 +210,8 @@ class CollectionStateManager {
   }
 
   createCombinations(
-    states: Array<ICollectionStateOption>
-  ): ICollectionStateCombinations {
+    states: Array<CollectionStateOptionInterface>
+  ): CollectionStateCombinationsInterface {
     return states.reduce(
       (combinations, { name, combination }) => ({
         [name]: combination,
@@ -213,7 +221,9 @@ class CollectionStateManager {
     );
   }
 
-  createCollection(combinations: ICollectionStateCombinations): Set<string> {
+  createCollection(
+    combinations: CollectionStateCombinationsInterface
+  ): Set<string> {
     return new Set(Object.values(combinations).flat());
   }
 
@@ -264,7 +274,7 @@ class CollectionStateManager {
     );
   }
 
-  addObserver(state: string, observer: ICollectionStateObserver) {
+  addObserver(state: string, observer: CollectionStateObserverInterface) {
     if (!(state in this.observers)) {
       throw new Error(`
         Failed to add observer on ${this.name}. 
@@ -275,7 +285,7 @@ class CollectionStateManager {
     this.observers[state].push(observer);
   }
 
-  removeObserver(state: string, observer: ICollectionStateObserver) {
+  removeObserver(state: string, observer: CollectionStateObserverInterface) {
     if (!(state in this.observers)) {
       throw new Error(`
         Failed to remove observer from ${this.name}. 
@@ -288,7 +298,7 @@ class CollectionStateManager {
     if (index > -1) observers.splice(index, 1);
   }
 
-  notifyObservers(stateManager: IStateManager) {
+  notifyObservers(stateManager: StateManagerInterface) {
     const observers = this.observers[stateManager.current];
 
     if (observers) {
@@ -396,7 +406,7 @@ class CollectionStateManager {
   }
 
   onSuspense(
-    collectionStateManager: ICollectionStateManager,
+    collectionStateManager: CollectionStateManagerInterface,
     combination: Array<string>
   ) {
     throw new Error(`
@@ -408,7 +418,7 @@ class CollectionStateManager {
 
 export default CollectionStateManager;
 export type {
-  ICollectionStateManager,
-  ICollectionStateOption,
-  ICollectionStateOptions
+  CollectionStateManagerInterface,
+  CollectionStateOptionInterface,
+  CollectionStateOptionsInterface
 };

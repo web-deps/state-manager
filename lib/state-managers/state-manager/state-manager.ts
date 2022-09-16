@@ -1,56 +1,58 @@
-interface IStateOption {
+interface StateOptionInterface {
   name: string;
-  observers?: Array<IStateObserver>;
+  observers?: Array<StateObserverInterface>;
 }
 
-interface IStateObserver {
-  (stateManager: IStateManager): void | Promise<void>;
+interface StateObserverInterface {
+  (stateManager: StateManagerInterface): void | Promise<void>;
 }
 
-interface IStateObservers {
-  [state: string]: Array<IStateObserver>;
+interface StateObserversInterface {
+  [state: string]: Array<StateObserverInterface>;
 }
 
-interface IStateContextOptions {
-  [name: string]: Array<IStateOption>;
+interface StateContextOptionsInterface {
+  [name: string]: Array<StateOptionInterface>;
 }
 
-interface IStateManager {
+interface StateManagerInterface {
   name: string;
   _current: string;
   current: string;
   readonly previous: string | null;
   readonly history: Array<string>;
-  readonly observers: IStateObservers;
+  readonly observers: StateObserversInterface;
   readonly context?: string;
   readonly saveHistory: boolean;
-  createObservers: (states: Array<IStateOption>) => IStateObservers;
-  addObserver: (state: string, observer: IStateObserver) => void;
-  removeObserver: (state: string, observer: IStateObserver) => void;
+  createObservers: (
+    states: Array<StateOptionInterface>
+  ) => StateObserversInterface;
+  addObserver: (state: string, observer: StateObserverInterface) => void;
+  removeObserver: (state: string, observer: StateObserverInterface) => void;
   notifyObservers: (state: string) => void;
 }
 
-interface IStateManagerOptions {
+interface StateManagerOptionsInterface {
   name?: string;
-  states?: Array<IStateOption>;
+  states?: Array<StateOptionInterface>;
   initialState: string;
-  contexts?: IStateContextOptions;
+  contexts?: StateContextOptionsInterface;
   context?: string;
   saveHistory?: boolean;
 }
 
 // Use more specific error types
 
-class StateManager implements IStateManager {
+class StateManager implements StateManagerInterface {
   readonly name: string;
   public _current: string;
   public readonly previous: string | null = null;
   public readonly history: Array<string> = [];
   public readonly context?: string;
   public readonly saveHistory: boolean;
-  public observers: IStateObservers = {};
+  public observers: StateObserversInterface = {};
 
-  constructor(options: IStateManagerOptions) {
+  constructor(options: StateManagerOptionsInterface) {
     const {
       name = 'StateManager',
       states,
@@ -99,7 +101,7 @@ class StateManager implements IStateManager {
     this.notifyObservers(state);
   }
 
-  createObservers(states: Array<IStateOption>) {
+  createObservers(states: Array<StateOptionInterface>) {
     if (states.length < 2)
       throw new Error(`
       Failed to create observers. You need to provide at least 2 states.
@@ -115,7 +117,7 @@ class StateManager implements IStateManager {
     }, {});
   }
 
-  addObserver(state: string, observer: IStateObserver) {
+  addObserver(state: string, observer: StateObserverInterface) {
     let observers = this.observers[state];
 
     if (!observers)
@@ -126,7 +128,7 @@ class StateManager implements IStateManager {
     observers.push(observer);
   }
 
-  removeObserver(state: string, observer: IStateObserver) {
+  removeObserver(state: string, observer: StateObserverInterface) {
     const observers = this.observers[state];
 
     if (!observers)
@@ -152,10 +154,10 @@ class StateManager implements IStateManager {
 
 export default StateManager;
 export type {
-  IStateManager,
-  IStateManagerOptions,
-  IStateObservers,
-  IStateOption,
-  IStateContextOptions,
-  IStateObserver
+  StateManagerInterface,
+  StateManagerOptionsInterface,
+  StateObserversInterface,
+  StateOptionInterface,
+  StateContextOptionsInterface,
+  StateObserverInterface
 };

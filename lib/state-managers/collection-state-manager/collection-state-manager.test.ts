@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import CollectionStateManager from './collection-state-manager';
-import type { ICollectionStateOption } from './collection-state-manager';
+import type { CollectionStateOptionInterface } from './collection-state-manager';
 
 let textFormatStates = [
   { name: 'normal', combination: ['normal'] },
@@ -128,12 +128,12 @@ describe('CollectionStateManager collection manipulation', () => {
 describe('CollectionStateManager observers', () => {
   const observerFlags = { normal: false, bold: false };
 
-  let textFormatStatesWithObservers: Array<ICollectionStateOption> =
+  let textFormatStatesWithObservers: Array<CollectionStateOptionInterface> =
     textFormatStates.map(({ name, combination }) => ({ name, combination }));
 
   let normalState = textFormatStatesWithObservers.find(
     ({ name }) => name == 'normal'
-  ) as ICollectionStateOption;
+  ) as CollectionStateOptionInterface;
 
   normalState.observers = [
     () => {
@@ -143,7 +143,7 @@ describe('CollectionStateManager observers', () => {
 
   let boldState = textFormatStatesWithObservers.find(
     ({ name }) => name == 'bold'
-  ) as ICollectionStateOption;
+  ) as CollectionStateOptionInterface;
 
   boldState.observers = [
     () => {

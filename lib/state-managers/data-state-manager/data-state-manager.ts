@@ -1,79 +1,89 @@
-import StateManager, { IStateOption } from '../state-manager/state-manager';
+import StateManager, {
+  StateOptionInterface
+} from '../state-manager/state-manager';
 import type {
-  IStateManager,
-  IStateManagerOptions,
-  IStateObserver
+  StateManagerInterface,
+  StateManagerOptionsInterface,
+  StateObserverInterface
 } from '../state-manager/state-manager';
 
-interface IDataStateOption<TData> {
+interface DataStateOptionInterface<DataType> {
   name: string;
-  matches: (data: TData) => boolean;
-  observers?: Array<IDataStateObserver<TData>>;
+  matches: (data: DataType) => boolean;
+  observers?: Array<DataStateObserverInterface<DataType>>;
 }
 
-interface IDataStateObserver<TData> {
-  (dataStateManager: IDataStateManager<TData>): void | Promise<void>;
+interface DataStateObserverInterface<DataType> {
+  (dataStateManager: DataStateManagerInterface<DataType>): void | Promise<void>;
 }
 
-interface IDataStateObservers<TData> {
-  [state: string]: Array<IDataStateObserver<TData>>;
+interface DataStateObserversInterface<DataType> {
+  [state: string]: Array<DataStateObserverInterface<DataType>>;
 }
 
-interface IDataTester<TData> {
-  (data: TData): boolean;
+interface DataTesterInterface<DataType> {
+  (data: DataType): boolean;
 }
 
-interface IDataTestItem<TData> {
+interface DataTestItemInterface<DataType> {
   state: string;
-  matches: IDataTester<TData>;
+  matches: DataTesterInterface<DataType>;
 }
 
-interface IDataUpdateHandler<TData> {
-  (data: TData): void;
+interface DataUpdateHandlerInterface<DataType> {
+  (data: DataType): void;
 }
 
-interface IDataStateManager<TData> {
+interface DataStateManagerInterface<DataType> {
   name: string;
-  stateManager: IStateManager;
+  stateManager: StateManagerInterface;
   current: string;
-  readonly currentData: TData;
+  readonly currentData: DataType;
   readonly context?: string;
-  readonly tests: Array<IDataTestItem<TData>>;
-  observers: IDataStateObservers<TData>;
+  readonly tests: Array<DataTestItemInterface<DataType>>;
+  observers: DataStateObserversInterface<DataType>;
   createObservers: (
-    states: Array<IDataStateOption<TData>>
-  ) => IDataStateObservers<TData>;
+    states: Array<DataStateOptionInterface<DataType>>
+  ) => DataStateObserversInterface<DataType>;
   createStateManagerStates: (
-    states: Array<IDataStateOption<TData>>
-  ) => Array<IStateOption>;
-  addObserver: (state: string, observer: IDataStateObserver<TData>) => void;
-  removeObserver: (state: string, observer: IDataStateObserver<TData>) => void;
-  notifyObservers: (stateManager: IStateManager) => void;
-  update: (data: TData) => void;
-  onUpdate?: IDataUpdateHandler<TData>;
+    states: Array<DataStateOptionInterface<DataType>>
+  ) => Array<StateOptionInterface>;
+  addObserver: (
+    state: string,
+    observer: DataStateObserverInterface<DataType>
+  ) => void;
+  removeObserver: (
+    state: string,
+    observer: DataStateObserverInterface<DataType>
+  ) => void;
+  notifyObservers: (stateManager: StateManagerInterface) => void;
+  update: (data: DataType) => void;
+  onUpdate?: DataUpdateHandlerInterface<DataType>;
 }
 
-interface IDataStateContextOptions<TData> {
-  [name: string]: Array<IDataStateOption<TData>>;
+interface DataStateContextOptionsInterface<DataType> {
+  [name: string]: Array<DataStateOptionInterface<DataType>>;
 }
 
-interface IDataStateOptions<TData>
-  extends Omit<IStateManagerOptions, 'states' | 'contexts'> {
-  states?: Array<IDataStateOption<TData>>;
-  contexts?: IDataStateContextOptions<TData>;
-  initialData: TData;
-  onUpdate?: IDataUpdateHandler<TData>;
+interface DataStateOptionsInterface<DataType>
+  extends Omit<StateManagerOptionsInterface, 'states' | 'contexts'> {
+  states?: Array<DataStateOptionInterface<DataType>>;
+  contexts?: DataStateContextOptionsInterface<DataType>;
+  initialData: DataType;
+  onUpdate?: DataUpdateHandlerInterface<DataType>;
 }
 
-class DataStateManager<TData> implements IDataStateManager<TData> {
-  public stateManager: IStateManager;
-  public currentData: TData;
+class DataStateManager<DataType>
+  implements DataStateManagerInterface<DataType>
+{
+  public stateManager: StateManagerInterface;
+  public currentData: DataType;
   public readonly context?: string;
-  public tests: Array<IDataTestItem<TData>> = [];
-  observers: IDataStateObservers<TData> = {};
-  public onUpdate?: IDataUpdateHandler<TData>;
+  public tests: Array<DataTestItemInterface<DataType>> = [];
+  observers: DataStateObserversInterface<DataType> = {};
+  public onUpdate?: DataUpdateHandlerInterface<DataType>;
 
-  constructor(options: IDataStateOptions<TData>) {
+  constructor(options: DataStateOptionsInterface<DataType>) {
     let {
       name = 'DataStateManager',
       states,
@@ -85,7 +95,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     } = options;
 
     this.currentData = initialData;
-    let stateManagerStates: IStateManagerOptions['states'];
+    let stateManagerStates: StateManagerOptionsInterface['states'];
     if (onUpdate) this.onUpdate = onUpdate;
 
     if (states) {
@@ -150,8 +160,8 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
   }
 
   createObservers(
-    states: IDataStateOption<TData>[]
-  ): IDataStateObservers<TData> {
+    states: DataStateOptionInterface<DataType>[]
+  ): DataStateObserversInterface<DataType> {
     return states.reduce(
       (allObservers, { name, observers }) => ({
         ...allObservers,
@@ -161,14 +171,16 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     );
   }
 
-  createStateManagerStates<TData>(states: Array<IDataStateOption<TData>>) {
+  createStateManagerStates<DataType>(
+    states: Array<DataStateOptionInterface<DataType>>
+  ) {
     return states.map(({ name }) => ({
       name,
       observers: [this.notifyObservers.bind(this)]
     }));
   }
 
-  update(data: TData) {
+  update(data: DataType) {
     if (data == this.currentData) return;
     this.currentData = data;
     this.onUpdate && this.onUpdate(data);
@@ -182,7 +194,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     }
   }
 
-  addObserver(state: string, observer: IDataStateObserver<TData>) {
+  addObserver(state: string, observer: DataStateObserverInterface<DataType>) {
     const observers = this.observers[state];
 
     if (!observers) {
@@ -194,7 +206,10 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     observers.push(observer);
   }
 
-  removeObserver(state: string, observer: IDataStateObserver<TData>) {
+  removeObserver(
+    state: string,
+    observer: DataStateObserverInterface<DataType>
+  ) {
     const observers = this.observers[state];
 
     if (!observers) {
@@ -207,7 +222,7 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
     if (observerIndex > -1) observers.splice(observerIndex, 1);
   }
 
-  notifyObservers(stateManager: IStateManager) {
+  notifyObservers(stateManager: StateManagerInterface) {
     const observers = this.observers[stateManager.current];
 
     if (observers) {
@@ -217,4 +232,8 @@ class DataStateManager<TData> implements IDataStateManager<TData> {
 }
 
 export default DataStateManager;
-export type { IDataStateManager, IDataStateObserver, IDataStateOption };
+export type {
+  DataStateManagerInterface,
+  DataStateObserverInterface,
+  DataStateOptionInterface
+};

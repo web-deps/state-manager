@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import StateManager, { IStateManager } from './state-manager';
-import type { IStateOption } from './state-manager';
+import StateManager, { StateManagerInterface } from './state-manager';
+import type { StateOptionInterface } from './state-manager';
 
 const colorStates = [
   { name: 'red' },
@@ -58,7 +58,7 @@ describe('StateManager state changes', () => {
 
 describe('StateManager observers', () => {
   it('observes StateManager state changes', () => {
-    let colorStatesWithObservers: Array<IStateOption> = colorStates.map(
+    let colorStatesWithObservers: Array<StateOptionInterface> = colorStates.map(
       ({ name }) => ({ name })
     );
     let observerFlags = {
@@ -66,7 +66,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: IStateManager) => {
+    const redObserver = (stateManager: StateManagerInterface) => {
       observerFlags.red = true;
     };
     const blueObserver = () => {
@@ -74,10 +74,10 @@ describe('StateManager observers', () => {
     };
     const redState = colorStatesWithObservers.find(
       ({ name }) => name == 'red'
-    ) as IStateOption;
+    ) as StateOptionInterface;
     const blueState = colorStatesWithObservers.find(
       ({ name }) => name == 'blue'
-    ) as IStateOption;
+    ) as StateOptionInterface;
     redState.observers = [redObserver];
     blueState.observers = [blueObserver];
 
@@ -99,7 +99,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: IStateManager) => {
+    const redObserver = (stateManager: StateManagerInterface) => {
       observerFlags.red = true;
     };
 
@@ -125,7 +125,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: IStateManager) => {
+    const redObserver = (stateManager: StateManagerInterface) => {
       observerFlags.red = true;
     };
 
@@ -150,3 +150,5 @@ describe('StateManager observers', () => {
     expect(observerFlags.red).toBe(false);
   });
 });
+
+// TODO: Add tests for previous state and history

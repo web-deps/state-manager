@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import DataStateManager from './data-state-manager';
 import type {
-  IDataStateObserver,
-  IDataStateOption
+  DataStateObserverInterface,
+  DataStateOptionInterface
 } from './data-state-manager';
 
 let volumeStates = [
@@ -98,17 +98,17 @@ describe('DataStateManager data updates', () => {
 describe('DataStateManager observers', () => {
   it('observes DataStateManager states with one observer per state', () => {
     let observerFlags = { low: false, high: false };
-    let volumeStatesWithObservers = volumeStates.map<IDataStateOption<number>>(
-      ({ name, matches }) => ({ name, matches })
-    );
+    let volumeStatesWithObservers = volumeStates.map<
+      DataStateOptionInterface<number>
+    >(({ name, matches }) => ({ name, matches }));
 
-    const lowVolumeObserver: IDataStateObserver<number> = (
+    const lowVolumeObserver: DataStateObserverInterface<number> = (
       dataStateManager
     ) => {
       observerFlags.low = true;
     };
 
-    const highVolumeObserver: IDataStateObserver<number> = (
+    const highVolumeObserver: DataStateObserverInterface<number> = (
       dataStateManager
     ) => {
       observerFlags.high = true;
@@ -134,17 +134,17 @@ describe('DataStateManager observers', () => {
 
   it('observes DataStateManager states with two observers on one of the states', () => {
     let observerFlags = { low: 0, high: 0 };
-    let volumeStatesWithObservers = volumeStates.map<IDataStateOption<number>>(
-      ({ name, matches }) => ({ name, matches })
-    );
+    let volumeStatesWithObservers = volumeStates.map<
+      DataStateOptionInterface<number>
+    >(({ name, matches }) => ({ name, matches }));
 
-    const lowVolumeObserver: IDataStateObserver<number> = (
+    const lowVolumeObserver: DataStateObserverInterface<number> = (
       dataStateManager
     ) => {
       observerFlags.low++;
     };
 
-    const highVolumeObserver: IDataStateObserver<number> = (
+    const highVolumeObserver: DataStateObserverInterface<number> = (
       dataStateManager
     ) => {
       observerFlags.high++;
