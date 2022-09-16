@@ -66,7 +66,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: StateManagerInterface) => {
+    const redObserver = () => {
       observerFlags.red = true;
     };
     const blueObserver = () => {
@@ -99,7 +99,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: StateManagerInterface) => {
+    const redObserver = () => {
       observerFlags.red = true;
     };
 
@@ -125,7 +125,7 @@ describe('StateManager observers', () => {
       blue: false
     };
 
-    const redObserver = (stateManager: StateManagerInterface) => {
+    const redObserver = () => {
       observerFlags.red = true;
     };
 

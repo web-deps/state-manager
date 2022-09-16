@@ -1,10 +1,23 @@
+import { EventEmitter, Event } from 'eve-man';
+import type {
+  AbstractEventEmitter,
+  EventInterface,
+  EventObserverType
+} from 'eve-man';
+
 interface StateOptionInterface {
   name: string;
   observers?: Array<StateObserverInterface>;
 }
 
+interface StateEventInterface {
+  readonly name: string;
+  readonly stateManager: StateManagerInterface;
+  readonly event: EventInterface<StateManagerInterface, unknown>;
+}
+
 interface StateObserverInterface {
-  (stateManager: StateManagerInterface): void | Promise<void>;
+  (stateManagerEvent: StateEventInterface): void | Promise<void>;
 }
 
 interface StateObserversInterface {
@@ -19,17 +32,25 @@ interface StateManagerInterface {
   name: string;
   _current: string;
   current: string;
+  readonly eventManager: AbstractEventEmitter<StateManagerInterface, unknown>;
   readonly previous: string | null;
   readonly history: Array<string>;
-  readonly observers: StateObserversInterface;
   readonly context?: string;
   readonly saveHistory: boolean;
+  readonly events: Array<string>;
+  readonly eventIsRegistered: (state: string) => boolean;
+  createEventManager: (
+    states: Array<StateOptionInterface>
+  ) => AbstractEventEmitter<StateManagerInterface, unknown>;
+  getEvents: (states: Array<StateOptionInterface>) => Array<string>;
+  createEventManagerObserver: (
+    stateObserver: StateObserverInterface
+  ) => EventObserverType;
   createObservers: (
     states: Array<StateOptionInterface>
   ) => StateObserversInterface;
   addObserver: (state: string, observer: StateObserverInterface) => void;
   removeObserver: (state: string, observer: StateObserverInterface) => void;
-  notifyObservers: (state: string) => void;
 }
 
 interface StateManagerOptionsInterface {
@@ -41,16 +62,35 @@ interface StateManagerOptionsInterface {
   saveHistory?: boolean;
 }
 
+class StateEvent implements StateEventInterface {
+  readonly event: EventInterface<StateManagerInterface, unknown>;
+
+  constructor(name: string, stateManager: StateManagerInterface) {
+    this.event = new Event(name, stateManager);
+  }
+
+  get name() {
+    return this.event.name;
+  }
+
+  get stateManager() {
+    return this.event.subject;
+  }
+}
+
 // Use more specific error types
 
 class StateManager implements StateManagerInterface {
   readonly name: string;
   public _current: string;
+  public readonly eventManager: AbstractEventEmitter<
+    StateManagerInterface,
+    unknown
+  >;
   public readonly previous: string | null = null;
   public readonly history: Array<string> = [];
   public readonly context?: string;
   public readonly saveHistory: boolean;
-  public observers: StateObserversInterface = {};
 
   constructor(options: StateManagerOptionsInterface) {
     const {
@@ -66,13 +106,14 @@ class StateManager implements StateManagerInterface {
     this._current = initialState;
     this.saveHistory = saveHistory;
 
-    if (states) this.observers = this.createObservers(states);
-    else if (contexts) {
+    if (states) {
+      this.eventManager = this.createEventManager(states);
+    } else if (contexts) {
       if (context) {
         const states = contexts[context];
 
         if (states) {
-          this.observers = this.createObservers(states);
+          this.eventManager = this.createEventManager(states);
           this.context = context;
         } else throw new Error(`Context ${context} is not listed in contexts.`);
       } else
@@ -92,13 +133,55 @@ class StateManager implements StateManagerInterface {
   }
 
   set current(state: string) {
-    if (!this.observers[state])
-      throw new Error(`
-      Failed to set state. State ${state} is not registered.
-    `);
+    const currentState = this._current;
 
-    this._current = state;
-    this.notifyObservers(state);
+    try {
+      this._current = state;
+      this.eventManager.emit(state);
+    } catch (error) {
+      this._current = currentState;
+
+      throw new Error(`
+        Failed to set state. State ${state} is not registered.
+      `);
+    }
+  }
+
+  get events() {
+    return this.eventManager.events;
+  }
+
+  eventIsRegistered(state: string): boolean {
+    return this.events.includes(state);
+  }
+
+  createEventManager(
+    states: StateOptionInterface[]
+  ): AbstractEventEmitter<StateManagerInterface, unknown> {
+    return states.reduce((eventManager, { name, observers }) => {
+      if (observers) {
+        for (const observer of observers) {
+          eventManager.addObserver(
+            name,
+            this.createEventManagerObserver(observer)
+          );
+        }
+      }
+
+      return eventManager;
+    }, new EventEmitter(this, this.getEvents(states)));
+  }
+
+  getEvents(states: Array<StateOptionInterface>): Array<string> {
+    return states.map(({ name }) => name);
+  }
+
+  createEventManagerObserver(
+    stateObserver: StateObserverInterface
+  ): EventObserverType {
+    return ({ name, subject }) => {
+      stateObserver(new StateEvent(name, subject));
+    };
   }
 
   createObservers(states: Array<StateOptionInterface>) {
@@ -118,37 +201,29 @@ class StateManager implements StateManagerInterface {
   }
 
   addObserver(state: string, observer: StateObserverInterface) {
-    let observers = this.observers[state];
-
-    if (!observers)
+    try {
+      this.eventManager.addObserver(
+        state,
+        this.createEventManagerObserver(observer)
+      );
+    } catch (error) {
       throw new Error(`
-      Failed to create add observer. State ${state} is not registered.
-    `);
-
-    observers.push(observer);
+        Failed to add observer. State ${state} is not registered.
+      `);
+    }
   }
 
   removeObserver(state: string, observer: StateObserverInterface) {
-    const observers = this.observers[state];
-
-    if (!observers)
+    try {
+      this.eventManager.removeObserver(
+        state,
+        this.createEventManagerObserver(observer)
+      );
+    } catch (error) {
       throw new Error(`
-      Failed to remove observer. State ${state} is not registered.
-    `);
-
-    const index = observers.indexOf(observer);
-    if (index > -1) observers.splice(index, 1);
-  }
-
-  notifyObservers(state: string) {
-    const observers = this.observers[state];
-
-    if (!observers)
-      throw new Error(`
-      Failed to notify observers. State ${state} is not registered.
-    `);
-
-    for (const observer of observers) observer(this);
+        Failed to remove observer. State ${state} is not registered.
+      `);
+    }
   }
 }
 
