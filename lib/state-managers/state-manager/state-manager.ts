@@ -28,6 +28,13 @@ interface StateContextOptionsInterface {
   [name: string]: Array<StateOptionInterface>;
 }
 
+interface EventObserversInterface {
+  [event: string]: {
+    eventObservers: Array<EventObserverType>;
+    stateObservers: Array<StateObserverInterface>;
+  };
+}
+
 interface StateManagerInterface {
   name: string;
   _current: string;
@@ -39,6 +46,7 @@ interface StateManagerInterface {
   readonly saveHistory: boolean;
   readonly events: Array<string>;
   readonly eventIsRegistered: (state: string) => boolean;
+  readonly observers: EventObserversInterface;
   createEventManager: (
     states: Array<StateOptionInterface>
   ) => AbstractEventEmitter<StateManagerInterface, unknown>;
@@ -46,9 +54,9 @@ interface StateManagerInterface {
   createEventManagerObserver: (
     stateObserver: StateObserverInterface
   ) => EventObserverType;
-  createObservers: (
+  createEventObservers: (
     states: Array<StateOptionInterface>
-  ) => StateObserversInterface;
+  ) => EventObserversInterface;
   addObserver: (state: string, observer: StateObserverInterface) => void;
   removeObserver: (state: string, observer: StateObserverInterface) => void;
 }
@@ -91,6 +99,7 @@ class StateManager implements StateManagerInterface {
   public readonly history: Array<string> = [];
   public readonly context?: string;
   public readonly saveHistory: boolean;
+  public readonly observers: EventObserversInterface = {};
 
   constructor(options: StateManagerOptionsInterface) {
     const {
@@ -159,12 +168,19 @@ class StateManager implements StateManagerInterface {
     states: StateOptionInterface[]
   ): AbstractEventEmitter<StateManagerInterface, unknown> {
     return states.reduce((eventManager, { name, observers }) => {
+      if (!this.observers[name])
+        this.observers[name] = {
+          eventObservers: [],
+          stateObservers: []
+        };
+
       if (observers) {
         for (const observer of observers) {
-          eventManager.addObserver(
-            name,
-            this.createEventManagerObserver(observer)
-          );
+          const eventObserver = this.createEventManagerObserver(observer);
+          this.observers[name].eventObservers.push(eventObserver);
+          this.observers[name].stateObservers.push(observer);
+
+          eventManager.addObserver(name, eventObserver);
         }
       }
 
@@ -184,7 +200,7 @@ class StateManager implements StateManagerInterface {
     };
   }
 
-  createObservers(states: Array<StateOptionInterface>) {
+  createEventObservers(states: Array<StateOptionInterface>) {
     if (states.length < 2)
       throw new Error(`
       Failed to create observers. You need to provide at least 2 states.
@@ -202,10 +218,10 @@ class StateManager implements StateManagerInterface {
 
   addObserver(state: string, observer: StateObserverInterface) {
     try {
-      this.eventManager.addObserver(
-        state,
-        this.createEventManagerObserver(observer)
-      );
+      const eventObserver = this.createEventManagerObserver(observer);
+      this.observers[state].eventObservers.push(eventObserver);
+      this.observers[state].stateObservers.push(observer);
+      this.eventManager.addObserver(state, eventObserver);
     } catch (error) {
       throw new Error(`
         Failed to add observer. State ${state} is not registered.
@@ -215,10 +231,10 @@ class StateManager implements StateManagerInterface {
 
   removeObserver(state: string, observer: StateObserverInterface) {
     try {
-      this.eventManager.removeObserver(
-        state,
-        this.createEventManagerObserver(observer)
-      );
+      const { eventObservers, stateObservers } = this.observers[state];
+      const observerIndex = stateObservers.indexOf(observer);
+      this.eventManager.removeObserver(state, eventObservers[observerIndex]);
+      stateObservers.splice(observerIndex, 1);
     } catch (error) {
       throw new Error(`
         Failed to remove observer. State ${state} is not registered.
