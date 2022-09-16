@@ -40,8 +40,8 @@ interface StateManagerInterface {
   _current: string;
   current: string;
   readonly eventManager: AbstractEventEmitter<StateManagerInterface, unknown>;
-  readonly previous: string | null;
-  readonly history: Array<string>;
+  previous: string | null;
+  history: Array<string>;
   readonly context?: string;
   readonly saveHistory: boolean;
   readonly events: Array<string>;
@@ -95,8 +95,8 @@ class StateManager implements StateManagerInterface {
     StateManagerInterface,
     unknown
   >;
-  public readonly previous: string | null = null;
-  public readonly history: Array<string> = [];
+  public previous: string | null = null;
+  public history: Array<string> = [];
   public readonly context?: string;
   public readonly saveHistory: boolean;
   public readonly observers: EventObserversInterface = {};
@@ -146,9 +146,12 @@ class StateManager implements StateManagerInterface {
 
     try {
       this._current = state;
+      this.previous = currentState;
+      if (this.saveHistory) this.history.push(currentState);
       this.eventManager.emit(state);
     } catch (error) {
       this._current = currentState;
+      this.history.pop();
 
       throw new Error(`
         Failed to set state. State ${state} is not registered.
