@@ -1,4 +1,5 @@
 import StateManager, {
+  StateEventInterface,
   StateManagerOptionsInterface
 } from '../state-manager/state-manager';
 import type {
@@ -6,8 +7,14 @@ import type {
   StateOptionInterface
 } from '../state-manager/state-manager';
 
+interface CollectionStateEventInterface {
+  name: string;
+  collectionStateManager: CollectionStateManagerInterface;
+  combination: Array<string>;
+}
+
 interface CollectionStateObserverInterface {
-  (collectionStateManager: CollectionStateManagerInterface): void;
+  (collectionStateEvent: CollectionStateEventInterface): void;
 }
 
 interface CollectionStateObserversInterface {
@@ -69,7 +76,7 @@ interface CollectionStateManagerInterface {
     state: string,
     observer: CollectionStateObserverInterface
   ) => void;
-  notifyObservers: (stateManager: StateManagerInterface) => void;
+  notifyObservers: (stateEvent: StateEventInterface) => void;
   matchesCombinationWithOrder: CombinationMatcherInterface;
   matchesCombinationWithoutOrder: CombinationMatcherInterface;
   matchesCombination: CombinationMatcherInterface;
@@ -94,6 +101,22 @@ interface CollectionStateOptionsInterface
   ordered?: boolean;
   size?: number;
   onSuspense?: CollectionStateSuspenseHandlerInterface;
+}
+
+class CollectionStateEvent implements CollectionStateEventInterface {
+  public readonly name: string;
+  public readonly collectionStateManager: CollectionStateManagerInterface;
+  public readonly combination: Array<string>;
+
+  constructor(
+    name: string,
+    collectionStateManager: CollectionStateManagerInterface,
+    combination: Array<string>
+  ) {
+    this.name = name;
+    this.collectionStateManager = collectionStateManager;
+    this.combination = combination;
+  }
 }
 
 class CollectionStateManager {
@@ -298,11 +321,13 @@ class CollectionStateManager {
     if (index > -1) observers.splice(index, 1);
   }
 
-  notifyObservers(stateManager: StateManagerInterface) {
+  notifyObservers(stateEvent: StateEventInterface) {
+    const { name, stateManager } = stateEvent;
     const observers = this.observers[stateManager.current];
 
     if (observers) {
-      for (const observer of observers) observer(this);
+      for (const observer of observers)
+        observer(new CollectionStateEvent(name, this, this.currentCombination));
     }
   }
 
