@@ -40,6 +40,6 @@
     "vitest": "^0.23.1"
   },
   "dependencies": {
-    "eve-man": "^1.2.0"
+    "eve-man": "^1.2.1"
   }
 }
