@@ -1,11 +1,14 @@
-import { EventEmitter } from 'eve-man';
+import { EventEmitter } from "eve-man";
+
 import type {
   AbstractEventEmitter,
   EventInterface,
   EventObserverType
-} from 'eve-man';
-import StateEvent from './state-event/state-event';
-import type { StateEventInterface } from './state-event/state-event';
+} from "eve-man";
+
+import StateEvent from "./state-event/state-event";
+import type { StateEventInterface } from "./state-event/state-event";
+
 import type {
   StateOptionInterface,
   StateObserverInterface,
@@ -13,8 +16,10 @@ import type {
   EventObserversInterface,
   StateContextOptionsInterface,
   StateManagerOptionsInterface,
-  StateManagerInterface
-} from './state-manager.types';
+  StateManagerInterface,
+  StateTransitionsInterface,
+  StateTransitionCollectionInterface
+} from "./state-manager.types";
 
 // Use more specific error types
 
@@ -30,10 +35,11 @@ class StateManager implements StateManagerInterface {
   public readonly context?: string;
   public readonly saveHistory: boolean;
   public readonly observers: EventObserversInterface = {};
+  public readonly transitions: { [state: string]: StateTransitionsInterface };
 
   constructor(options: StateManagerOptionsInterface) {
     const {
-      name = 'StateManager',
+      name = "StateManager",
       states,
       initialState,
       contexts,
@@ -47,12 +53,14 @@ class StateManager implements StateManagerInterface {
 
     if (states) {
       this.eventManager = this.createEventManager(states);
+      this.transitions = this.createStateTransitions(states);
     } else if (contexts) {
       if (context) {
         const states = contexts[context];
 
         if (states) {
           this.eventManager = this.createEventManager(states);
+          this.transitions = this.createStateTransitions(states);
           this.context = context;
         } else throw new Error(`Context ${context} is not listed in contexts.`);
       } else
@@ -72,21 +80,49 @@ class StateManager implements StateManagerInterface {
   }
 
   set current(state: string) {
-    const currentState = this._current;
-
-    try {
-      this._current = state;
-      this.previous = currentState;
-      if (this.saveHistory) this.history.push(currentState);
-      this.eventManager.emit(state);
-    } catch (error) {
-      this._current = currentState;
-      this.history.pop();
-
+    if (!this.events.includes(state)) {
       throw new Error(`
         Failed to set state. State ${state} is not registered.
       `);
     }
+
+    const currentState = this.current;
+    const currentStateTransitions = this.transitions[this.current];
+
+    if (
+      currentStateTransitions &&
+      currentStateTransitions.to &&
+      currentStateTransitions.to.states.includes(state)
+    ) {
+      const onBeforeTransitionObservers = currentStateTransitions.to.observers;
+
+      if (onBeforeTransitionObservers) {
+        for (const observer of onBeforeTransitionObservers) {
+          observer(new StateEvent(state, this));
+        }
+      }
+    }
+
+    this._current = state;
+    this.previous = currentState;
+    const newStateTransitions = this.transitions[state];
+
+    if (
+      newStateTransitions &&
+      newStateTransitions.from &&
+      newStateTransitions.from.states.includes(this.previous as string)
+    ) {
+      const onAfterTransitionObservers = newStateTransitions.from.observers;
+
+      if (onAfterTransitionObservers) {
+        for (const observer of onAfterTransitionObservers) {
+          observer(new StateEvent(this.previous as string, this));
+        }
+      }
+    }
+
+    if (this.saveHistory) this.history.push(currentState);
+    this.eventManager.emit(state);
   }
 
   get events() {
@@ -146,6 +182,16 @@ class StateManager implements StateManagerInterface {
         ...allObservers,
         [name]: observers
       };
+    }, {});
+  }
+
+  createStateTransitions(
+    states: StateOptionInterface[]
+  ): StateTransitionCollectionInterface {
+    return states.reduce((allTransitions, { name, transitions }) => {
+      return transitions
+        ? { ...allTransitions, [name]: transitions }
+        : allTransitions;
     }, {});
   }
 
