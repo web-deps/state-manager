@@ -109,6 +109,14 @@ class DataStateManager<DataType>
     this.stateManager.current = state;
   }
 
+  get previous() {
+    return this.stateManager.previous;
+  }
+
+  get history() {
+    return this.stateManager.history;
+  }
+
   createObservers(
     states: DataStateOptionInterface<DataType>[]
   ): DataStateObserversInterface<DataType> {

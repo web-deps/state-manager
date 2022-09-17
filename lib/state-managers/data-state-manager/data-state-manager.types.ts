@@ -57,6 +57,8 @@ interface DataStateManagerInterface<DataType> {
   current: string;
   readonly currentData: DataType;
   readonly context?: string;
+  readonly previous: string | null;
+  readonly history: Array<string>;
   readonly tests: Array<DataTestItemInterface<DataType>>;
   observers: DataStateObserversInterface<DataType>;
   createObservers: (
