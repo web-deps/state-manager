@@ -1,10 +1,12 @@
-import StateManager from '../state-manager/state-manager';
+import StateManager, {
+  StateObserverInterface
+} from "../state-manager/state-manager";
 
 import type {
   StateManagerInterface,
   StateOptionInterface,
   StateEventInterface
-} from '../state-manager/state-manager';
+} from "../state-manager/state-manager";
 
 import type {
   CollectionStateObserverInterface,
@@ -16,9 +18,10 @@ import type {
   CollectionStateManagerInterface,
   CollectionStateContextOptionsInterface,
   CollectionStateOptionsInterface
-} from './collection-state-manager.types';
+} from "./collection-state-manager.types";
 
-import CollectionStateEvent from './collection-state-event/collection-state-event';
+import CollectionStateEvent from "./collection-state-event/collection-state-event";
+import { StateTransitionsInterface } from "../state-manager/state-manager.types";
 
 class CollectionStateManager {
   public stateManager: StateManagerInterface;
@@ -34,7 +37,7 @@ class CollectionStateManager {
 
   constructor(options: CollectionStateOptionsInterface) {
     const {
-      name = 'CollectionStateManager',
+      name = "CollectionStateManager",
       states,
       contexts,
       context,
@@ -135,10 +138,54 @@ class CollectionStateManager {
   createStateManagerStates(
     states: Array<CollectionStateOptionInterface>
   ): Array<StateOptionInterface> {
-    return states.map(({ name }) => ({
-      name,
-      observers: [this.notifyObservers.bind(this)]
-    }));
+    const convertTransitionObserver =
+      (
+        collectionStateObserver: CollectionStateObserverInterface
+      ): StateObserverInterface =>
+      (stateEvent: StateEventInterface<StateManagerInterface>) => {
+        collectionStateObserver(
+          new CollectionStateEvent<CollectionStateManagerInterface>(
+            stateEvent.name,
+            this,
+            this.currentCombination
+          )
+        );
+      };
+
+    return states.map(({ name, transitions }) => {
+      let stateTransitions: StateTransitionsInterface = {
+        from: {
+          states: [],
+          observers: []
+        },
+        to: {
+          states: [],
+          observers: []
+        }
+      };
+
+      if (transitions) {
+        if (transitions.from) {
+          stateTransitions.from.states = transitions.from.states;
+          stateTransitions.from.observers = transitions.from.observers.map(
+            convertTransitionObserver
+          );
+        }
+
+        if (transitions.to) {
+          stateTransitions.to.states = transitions.to.states;
+          stateTransitions.to.observers = transitions.to.observers.map(
+            convertTransitionObserver
+          );
+        }
+      }
+
+      return {
+        name,
+        observers: [this.notifyObservers.bind(this)],
+        transitions: stateTransitions
+      };
+    });
   }
 
   createCombinations(
@@ -345,7 +392,7 @@ class CollectionStateManager {
   ) {
     throw new Error(`
       Failed to set combination on ${this.name}. 
-      Combination [${combination.join(', ')}] does not match any state.
+      Combination [${combination.join(", ")}] does not match any state.
     `);
   }
 }

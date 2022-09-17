@@ -3,9 +3,20 @@ import type {
   StateOptionInterface,
   StateEventInterface,
   StateManagerOptionsInterface
-} from '../state-manager/state-manager';
+} from "../state-manager/state-manager";
 
-import type { CollectionStateEventInterface } from './collection-state-event/collection-state-event';
+import type { CollectionStateEventInterface } from "./collection-state-event/collection-state-event";
+
+interface CollectionStateTransitionsInterface {
+  from: {
+    states: Array<string>;
+    observers: Array<CollectionStateObserverInterface>;
+  };
+  to: {
+    states: Array<string>;
+    observers: Array<CollectionStateObserverInterface>;
+  };
+}
 
 interface CollectionStateObserverInterface {
   (
@@ -29,6 +40,7 @@ interface CollectionStateOptionInterface {
   name: string;
   combination: Array<string>;
   observers?: Array<CollectionStateObserverInterface>;
+  transitions?: CollectionStateTransitionsInterface;
 }
 
 interface CollectionStateSuspenseHandlerInterface {
@@ -43,7 +55,7 @@ interface CollectionStateContextOptionsInterface {
 }
 
 interface CollectionStateOptionsInterface
-  extends Omit<StateManagerOptionsInterface, 'states' | 'contexts'> {
+  extends Omit<StateManagerOptionsInterface, "states" | "contexts"> {
   states?: Array<CollectionStateOptionInterface>;
   contexts?: CollectionStateContextOptionsInterface;
   ordered?: boolean;
@@ -112,5 +124,6 @@ export type {
   CollectionStateSuspenseHandlerInterface,
   CollectionStateManagerInterface,
   CollectionStateContextOptionsInterface,
-  CollectionStateOptionsInterface
+  CollectionStateOptionsInterface,
+  CollectionStateTransitionsInterface
 };

@@ -3,14 +3,26 @@ import type {
   StateOptionInterface,
   StateManagerOptionsInterface,
   StateObserverInterface
-} from '../state-manager/state-manager';
+} from "../state-manager/state-manager";
 
-import type { DataStateEventInterface } from './data-state-event/data-state-event';
+import type { DataStateEventInterface } from "./data-state-event/data-state-event";
+
+interface DataStateTransitionsInterface<DataType> {
+  from: {
+    states: Array<string>;
+    observers: Array<DataStateObserverInterface<DataType>>;
+  };
+  to: {
+    states: Array<string>;
+    observers: Array<DataStateObserverInterface<DataType>>;
+  };
+}
 
 interface DataStateOptionInterface<DataType> {
   name: string;
   matches: (data: DataType) => boolean;
   observers?: Array<DataStateObserverInterface<DataType>>;
+  transitions?: DataStateTransitionsInterface<DataType>;
 }
 
 interface DataStateObserverInterface<DataType> {
@@ -44,7 +56,7 @@ interface DataStateContextOptionsInterface<DataType> {
 }
 
 interface DataStateOptionsInterface<DataType>
-  extends Omit<StateManagerOptionsInterface, 'states' | 'contexts'> {
+  extends Omit<StateManagerOptionsInterface, "states" | "contexts"> {
   states?: Array<DataStateOptionInterface<DataType>>;
   contexts?: DataStateContextOptionsInterface<DataType>;
   initialData: DataType;
@@ -89,5 +101,6 @@ export type {
   DataTesterInterface,
   DataTestItemInterface,
   DataUpdateHandlerInterface,
-  DataStateContextOptionsInterface
+  DataStateContextOptionsInterface,
+  DataStateTransitionsInterface
 };

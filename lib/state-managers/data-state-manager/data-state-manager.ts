@@ -1,13 +1,13 @@
 import StateManager, {
   StateEventInterface,
   StateOptionInterface
-} from '../state-manager/state-manager';
+} from "../state-manager/state-manager";
 
 import type {
   StateManagerInterface,
   StateManagerOptionsInterface,
   StateObserverInterface
-} from '../state-manager/state-manager';
+} from "../state-manager/state-manager";
 
 import type {
   DataStateManagerInterface,
@@ -19,9 +19,10 @@ import type {
   DataTestItemInterface,
   DataUpdateHandlerInterface,
   DataStateContextOptionsInterface
-} from './data-state-manager.types';
+} from "./data-state-manager.types";
 
-import DataStateEvent from './data-state-event/data-state-event';
+import DataStateEvent from "./data-state-event/data-state-event";
+import { StateTransitionsInterface } from "../state-manager/state-manager.types";
 
 class DataStateManager<DataType>
   implements DataStateManagerInterface<DataType>
@@ -35,7 +36,7 @@ class DataStateManager<DataType>
 
   constructor(options: DataStateOptionsInterface<DataType>) {
     let {
-      name = 'DataStateManager',
+      name = "DataStateManager",
       states,
       contexts,
       context,
@@ -45,7 +46,7 @@ class DataStateManager<DataType>
     } = options;
 
     this.currentData = initialData;
-    let stateManagerStates: StateManagerOptionsInterface['states'];
+    let stateManagerStates: StateManagerOptionsInterface["states"];
     if (onUpdate) this.onUpdate = onUpdate;
 
     if (states) {
@@ -129,13 +130,57 @@ class DataStateManager<DataType>
     );
   }
 
-  createStateManagerStates<DataType>(
-    states: Array<DataStateOptionInterface<DataType>>
-  ) {
-    return states.map(({ name }) => ({
-      name,
-      observers: [this.notifyObservers.bind(this)]
-    }));
+  createStateManagerStates(states: Array<DataStateOptionInterface<DataType>>) {
+    const convertTransitionObserver =
+      (
+        dataStateObserver: DataStateObserverInterface<DataType>
+      ): StateObserverInterface =>
+      (stateEvent: StateEventInterface<StateManagerInterface>) => {
+        dataStateObserver(
+          new DataStateEvent<DataStateManagerInterface<DataType>, DataType>(
+            stateEvent.name,
+            this,
+            this.currentData
+          )
+        );
+      };
+
+    return states.map(({ name, transitions }) => {
+      let stateTransitions: StateTransitionsInterface = {
+        from: {
+          states: [],
+          observers: []
+        },
+        to: {
+          states: [],
+          observers: []
+        }
+      };
+
+      if (transitions) {
+        if (transitions.from) {
+          stateTransitions.from.states = transitions.from.states;
+          stateTransitions.from.observers = transitions.from.observers.map(
+            convertTransitionObserver
+          );
+        }
+
+        if (transitions.to) {
+          stateTransitions.to.states = transitions.to.states;
+          stateTransitions.to.observers = transitions.to.observers.map(
+            convertTransitionObserver
+          );
+        }
+      }
+
+      console.log(stateTransitions);
+
+      return {
+        name,
+        observers: [this.notifyObservers.bind(this)],
+        transitions: stateTransitions
+      };
+    });
   }
 
   update(data: DataType) {
