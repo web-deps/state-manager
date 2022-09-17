@@ -2,12 +2,28 @@ import type {
   AbstractEventEmitter,
   EventInterface,
   EventObserverType
-} from 'eve-man';
-import type { StateEventInterface } from './state-event/state-event';
+} from "eve-man";
+import type { StateEventInterface } from "./state-event/state-event";
+
+interface StateTransitionsInterface {
+  from: {
+    states: Array<string>;
+    observers: Array<StateObserverInterface>;
+  };
+  to: {
+    states: Array<string>;
+    observers: Array<StateObserverInterface>;
+  };
+}
+
+interface StateTransitionCollectionInterface {
+  [state: string]: StateTransitionsInterface;
+}
 
 interface StateOptionInterface {
   name: string;
   observers?: Array<StateObserverInterface>;
+  transitions?: StateTransitionsInterface;
 }
 
 interface StateObserverInterface {
@@ -52,6 +68,7 @@ interface StateManagerInterface {
   readonly events: Array<string>;
   readonly eventIsRegistered: (state: string) => boolean;
   readonly observers: EventObserversInterface;
+  readonly transitions: StateTransitionCollectionInterface;
   createEventManager: (
     states: Array<StateOptionInterface>
   ) => AbstractEventEmitter<StateManagerInterface, unknown>;
@@ -62,6 +79,9 @@ interface StateManagerInterface {
   createEventObservers: (
     states: Array<StateOptionInterface>
   ) => EventObserversInterface;
+  createStateTransitions: (
+    states: Array<StateOptionInterface>
+  ) => StateTransitionCollectionInterface;
   addObserver: (state: string, observer: StateObserverInterface) => void;
   removeObserver: (state: string, observer: StateObserverInterface) => void;
 }
@@ -73,5 +93,7 @@ export type {
   EventObserversInterface,
   StateContextOptionsInterface,
   StateManagerOptionsInterface,
-  StateManagerInterface
+  StateManagerInterface,
+  StateTransitionsInterface,
+  StateTransitionCollectionInterface
 };
