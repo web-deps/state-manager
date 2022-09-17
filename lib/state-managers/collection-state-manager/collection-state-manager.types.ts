@@ -56,6 +56,8 @@ interface CollectionStateManagerInterface {
   readonly stateManager: StateManagerInterface;
   readonly current: string;
   readonly currentCombination: Array<string>;
+  readonly previous: string | null;
+  readonly history: Array<string>;
   readonly context?: string;
   readonly ordered: boolean;
   readonly fixedSize: boolean;

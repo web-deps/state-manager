@@ -112,6 +112,14 @@ class CollectionStateManager {
     this.stateManager.current = state;
   }
 
+  get previous() {
+    return this.stateManager.previous;
+  }
+
+  get history() {
+    return this.stateManager.history;
+  }
+
   createObservers(
     states: Array<CollectionStateOptionInterface>
   ): CollectionStateObserversInterface {
