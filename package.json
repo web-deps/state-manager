@@ -7,6 +7,7 @@
   ],
   "main": "./dist/state-manager.umd.js",
   "module": "./dist/state-manager.es.js",
+  "types": "./dist/state-manager.es.d.ts",
   "exports": {
     ".": {
       "import": "./dist/state-manager.es.js",
