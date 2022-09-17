@@ -1,90 +1,20 @@
-import { EventEmitter, Event } from 'eve-man';
+import { EventEmitter } from 'eve-man';
 import type {
   AbstractEventEmitter,
   EventInterface,
   EventObserverType
 } from 'eve-man';
-
-interface StateOptionInterface {
-  name: string;
-  observers?: Array<StateObserverInterface>;
-}
-
-interface StateEventInterface {
-  readonly name: string;
-  readonly stateManager: StateManagerInterface;
-  readonly event: EventInterface<StateManagerInterface, unknown>;
-}
-
-interface StateObserverInterface {
-  (stateManagerEvent: StateEventInterface): void | Promise<void>;
-}
-
-interface StateObserversInterface {
-  [state: string]: Array<StateObserverInterface>;
-}
-
-interface StateContextOptionsInterface {
-  [name: string]: Array<StateOptionInterface>;
-}
-
-interface EventObserversInterface {
-  [event: string]: {
-    eventObservers: Array<EventObserverType>;
-    stateObservers: Array<StateObserverInterface>;
-  };
-}
-
-interface StateManagerInterface {
-  name: string;
-  _current: string;
-  current: string;
-  readonly eventManager: AbstractEventEmitter<StateManagerInterface, unknown>;
-  previous: string | null;
-  history: Array<string>;
-  readonly context?: string;
-  readonly saveHistory: boolean;
-  readonly events: Array<string>;
-  readonly eventIsRegistered: (state: string) => boolean;
-  readonly observers: EventObserversInterface;
-  createEventManager: (
-    states: Array<StateOptionInterface>
-  ) => AbstractEventEmitter<StateManagerInterface, unknown>;
-  getEvents: (states: Array<StateOptionInterface>) => Array<string>;
-  createEventManagerObserver: (
-    stateObserver: StateObserverInterface
-  ) => EventObserverType;
-  createEventObservers: (
-    states: Array<StateOptionInterface>
-  ) => EventObserversInterface;
-  addObserver: (state: string, observer: StateObserverInterface) => void;
-  removeObserver: (state: string, observer: StateObserverInterface) => void;
-}
-
-interface StateManagerOptionsInterface {
-  name?: string;
-  states?: Array<StateOptionInterface>;
-  initialState: string;
-  contexts?: StateContextOptionsInterface;
-  context?: string;
-  saveHistory?: boolean;
-}
-
-class StateEvent implements StateEventInterface {
-  readonly event: EventInterface<StateManagerInterface, unknown>;
-
-  constructor(name: string, stateManager: StateManagerInterface) {
-    this.event = new Event(name, stateManager);
-  }
-
-  get name() {
-    return this.event.name;
-  }
-
-  get stateManager() {
-    return this.event.subject;
-  }
-}
+import StateEvent from './state-event/state-event';
+import type { StateEventInterface } from './state-event/state-event';
+import type {
+  StateOptionInterface,
+  StateObserverInterface,
+  StateObserversInterface,
+  EventObserversInterface,
+  StateContextOptionsInterface,
+  StateManagerOptionsInterface,
+  StateManagerInterface
+} from './state-manager.types';
 
 // Use more specific error types
 

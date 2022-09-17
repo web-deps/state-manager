@@ -2,99 +2,26 @@ import StateManager, {
   StateEventInterface,
   StateOptionInterface
 } from '../state-manager/state-manager';
+
 import type {
   StateManagerInterface,
   StateManagerOptionsInterface,
   StateObserverInterface
 } from '../state-manager/state-manager';
 
-interface DataStateOptionInterface<DataType> {
-  name: string;
-  matches: (data: DataType) => boolean;
-  observers?: Array<DataStateObserverInterface<DataType>>;
-}
+import type {
+  DataStateManagerInterface,
+  DataStateOptionInterface,
+  DataStateOptionsInterface,
+  DataStateObserverInterface,
+  DataStateObserversInterface,
+  DataTesterInterface,
+  DataTestItemInterface,
+  DataUpdateHandlerInterface,
+  DataStateContextOptionsInterface
+} from './data-state-manager.types';
 
-interface DataStateEventInterface<DataType> {
-  name: string;
-  dataStateManager: DataStateManagerInterface<DataType>;
-  data: DataType;
-}
-
-interface DataStateObserverInterface<DataType> {
-  (dataStateEvent: DataStateEventInterface<DataType>): void | Promise<void>;
-}
-
-interface DataStateObserversInterface<DataType> {
-  [state: string]: Array<DataStateObserverInterface<DataType>>;
-}
-
-interface DataTesterInterface<DataType> {
-  (data: DataType): boolean;
-}
-
-interface DataTestItemInterface<DataType> {
-  state: string;
-  matches: DataTesterInterface<DataType>;
-}
-
-interface DataUpdateHandlerInterface<DataType> {
-  (data: DataType): void;
-}
-
-interface DataStateManagerInterface<DataType> {
-  name: string;
-  stateManager: StateManagerInterface;
-  current: string;
-  readonly currentData: DataType;
-  readonly context?: string;
-  readonly tests: Array<DataTestItemInterface<DataType>>;
-  observers: DataStateObserversInterface<DataType>;
-  createObservers: (
-    states: Array<DataStateOptionInterface<DataType>>
-  ) => DataStateObserversInterface<DataType>;
-  createStateManagerStates: (
-    states: Array<DataStateOptionInterface<DataType>>
-  ) => Array<StateOptionInterface>;
-  addObserver: (
-    state: string,
-    observer: DataStateObserverInterface<DataType>
-  ) => void;
-  removeObserver: (
-    state: string,
-    observer: DataStateObserverInterface<DataType>
-  ) => void;
-  notifyObservers: StateObserverInterface;
-  update: (data: DataType) => void;
-  onUpdate?: DataUpdateHandlerInterface<DataType>;
-}
-
-interface DataStateContextOptionsInterface<DataType> {
-  [name: string]: Array<DataStateOptionInterface<DataType>>;
-}
-
-interface DataStateOptionsInterface<DataType>
-  extends Omit<StateManagerOptionsInterface, 'states' | 'contexts'> {
-  states?: Array<DataStateOptionInterface<DataType>>;
-  contexts?: DataStateContextOptionsInterface<DataType>;
-  initialData: DataType;
-  onUpdate?: DataUpdateHandlerInterface<DataType>;
-}
-
-class DataStateEvent<DataType> implements DataStateEventInterface<DataType> {
-  public readonly name: string;
-  public readonly dataStateManager: DataStateManagerInterface<DataType>;
-  public readonly data: DataType;
-
-  constructor(
-    name: string,
-    dataStateManager: DataStateManagerInterface<DataType>,
-    data: DataType
-  ) {
-    this.name = name;
-    this.dataStateManager = dataStateManager;
-    this.data = data;
-  }
-}
+import DataStateEvent from './data-state-event/data-state-event';
 
 class DataStateManager<DataType>
   implements DataStateManagerInterface<DataType>
@@ -245,7 +172,7 @@ class DataStateManager<DataType>
     if (observerIndex > -1) observers.splice(observerIndex, 1);
   }
 
-  notifyObservers(stateEvent: StateEventInterface) {
+  notifyObservers(stateEvent: StateEventInterface<StateManagerInterface>) {
     const { name, stateManager } = stateEvent;
     const observers = this.observers[stateManager.current];
 
