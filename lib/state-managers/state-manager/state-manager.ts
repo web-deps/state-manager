@@ -18,7 +18,8 @@ import type {
   StateManagerOptionsInterface,
   StateManagerInterface,
   StateTransitionsInterface,
-  StateTransitionCollectionInterface
+  StateTransitionCollectionInterface,
+  SuspenseHandlerType
 } from "./state-manager.types";
 
 // Use more specific error types
@@ -44,12 +45,14 @@ class StateManager implements StateManagerInterface {
       initialState,
       contexts,
       context,
-      saveHistory = false
+      saveHistory = false,
+      onSuspense
     } = options;
 
     this.name = name;
     this._current = initialState;
     this.saveHistory = saveHistory;
+    if (onSuspense) this.onSuspense = onSuspense;
 
     if (states) {
       this.eventManager = this.createEventManager(states);
@@ -89,11 +92,16 @@ class StateManager implements StateManagerInterface {
     const currentState = this.current;
     const currentStateTransitions = this.transitions[this.current];
 
-    if (
-      currentStateTransitions &&
-      currentStateTransitions.to &&
-      currentStateTransitions.to.states.includes(state)
-    ) {
+    if (currentStateTransitions) {
+      const transitionAllowed =
+        currentStateTransitions.to &&
+        currentStateTransitions.to.states.includes(state);
+
+      if (!transitionAllowed) {
+        this.onSuspense(new StateEvent(state, this));
+        return;
+      }
+
       const onBeforeTransitionObservers = currentStateTransitions.to.observers;
 
       if (onBeforeTransitionObservers) {
@@ -219,6 +227,13 @@ class StateManager implements StateManagerInterface {
         Failed to remove observer. State ${state} is not registered.
       `);
     }
+  }
+
+  onSuspense(stateEvent: StateEventInterface<StateManagerInterface>) {
+    throw new Error(`
+      Failed to transition state. 
+      Transition from ${this.current} to ${stateEvent.name} is not allowed.
+    `);
   }
 }
 

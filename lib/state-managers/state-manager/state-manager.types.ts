@@ -40,6 +40,10 @@ interface StateContextOptionsInterface {
   [name: string]: Array<StateOptionInterface>;
 }
 
+type SuspenseHandlerType = (
+  stateEvent: StateEventInterface<StateManagerInterface>
+) => void;
+
 interface EventObserversInterface {
   [event: string]: {
     eventObservers: Array<EventObserverType>;
@@ -54,6 +58,7 @@ interface StateManagerOptionsInterface {
   contexts?: StateContextOptionsInterface;
   context?: string;
   saveHistory?: boolean;
+  onSuspense?: SuspenseHandlerType;
 }
 
 interface StateManagerInterface {
@@ -84,6 +89,7 @@ interface StateManagerInterface {
   ) => StateTransitionCollectionInterface;
   addObserver: (state: string, observer: StateObserverInterface) => void;
   removeObserver: (state: string, observer: StateObserverInterface) => void;
+  onSuspense: SuspenseHandlerType;
 }
 
 export type {
@@ -95,5 +101,6 @@ export type {
   StateManagerOptionsInterface,
   StateManagerInterface,
   StateTransitionsInterface,
-  StateTransitionCollectionInterface
+  StateTransitionCollectionInterface,
+  SuspenseHandlerType
 };

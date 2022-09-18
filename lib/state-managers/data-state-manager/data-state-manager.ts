@@ -173,12 +173,10 @@ class DataStateManager<DataType>
         }
       }
 
-      console.log(stateTransitions);
-
       return {
         name,
         observers: [this.notifyObservers.bind(this)],
-        transitions: stateTransitions
+        transitions: transitions && stateTransitions
       };
     });
   }
