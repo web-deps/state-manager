@@ -164,6 +164,51 @@ describe("DataStateManager observers", () => {
   });
 });
 
+describe("DataStateManager history", () => {
+  it("change and track DataStateManager previous value", () => {
+    const volume = new DataStateManager({
+      initialState: "low",
+      initialData: 50,
+      states: volumeStates
+    });
+
+    expect(volume.previous).toBe(null);
+    volume.update(90);
+    expect(volume.previous).toBe("low");
+    volume.update(40);
+    expect(volume.previous).toBe("high");
+  });
+
+  it("should not change DataStateManager history", () => {
+    const volume = new DataStateManager({
+      initialState: "low",
+      initialData: 50,
+      states: volumeStates
+    });
+
+    expect(volume.history).toEqual([]);
+    volume.update(90);
+    expect(volume.history).toEqual([]);
+    volume.update(40);
+    expect(volume.history).toEqual([]);
+  });
+
+  it("should change and track DataStateManager history", () => {
+    const volume = new DataStateManager({
+      initialState: "low",
+      initialData: 50,
+      states: volumeStates,
+      saveHistory: true
+    });
+
+    expect(volume.history).toEqual([]);
+    volume.update(90);
+    expect(volume.history).toEqual(["low"]);
+    volume.update(40);
+    expect(volume.history).toEqual(["low", "high"]);
+  });
+});
+
 describe("DataStateManager transitions", () => {
   let transitionFlags = {
     from: "",

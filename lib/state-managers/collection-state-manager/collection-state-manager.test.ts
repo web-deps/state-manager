@@ -220,6 +220,48 @@ describe("CollectionStateManager suspense", () => {
   });
 });
 
+describe("CollectionStateManager history", () => {
+  it("change and track CollectionStateManager previous value", () => {
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: textFormatStates
+    });
+
+    expect(textFormat.previous).toBe(null);
+    textFormat.replaceItem("normal", "bold");
+    expect(textFormat.previous).toBe("normal");
+    textFormat.replaceItem("bold", "normal");
+    expect(textFormat.previous).toBe("bold");
+  });
+
+  it("should not change CollectionStateManager history", () => {
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: textFormatStates
+    });
+
+    expect(textFormat.history).toEqual([]);
+    textFormat.replaceItem("normal", "bold");
+    expect(textFormat.history).toEqual([]);
+    textFormat.replaceItem("bold", "normal");
+    expect(textFormat.history).toEqual([]);
+  });
+
+  it("should change and track CollectionStateManager history", () => {
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: textFormatStates,
+      saveHistory: true
+    });
+
+    expect(textFormat.history).toEqual([]);
+    textFormat.replaceItem("normal", "bold");
+    expect(textFormat.history).toEqual(["normal"]);
+    textFormat.replaceItem("bold", "normal");
+    expect(textFormat.history).toEqual(["normal", "bold"]);
+  });
+});
+
 describe("CollectionStateManager transitions", () => {
   let transitionFlags = {
     from: "",
