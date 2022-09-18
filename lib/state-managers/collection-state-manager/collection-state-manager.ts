@@ -93,6 +93,11 @@ class CollectionStateManager {
       name,
       states: stateManagerStates,
       initialState,
+      onSuspense: ({ name }) => {
+        this.onSuspense(
+          new CollectionStateEvent(name, this, this.currentCombination)
+        );
+      },
       ...stateManagerOptions
     });
   }
@@ -155,7 +160,7 @@ class CollectionStateManager {
       };
 
     return states.map(({ name, transitions }) => {
-      let stateTransitions: StateTransitionsInterface = {
+      let stateTransitions: Required<StateTransitionsInterface> = {
         from: {
           states: [],
           observers: []

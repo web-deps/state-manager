@@ -98,6 +98,9 @@ class DataStateManager<DataType>
     this.stateManager = new StateManager({
       name,
       states: stateManagerStates,
+      onSuspense: ({ name }) => {
+        this.onSuspense(new DataStateEvent(name, this, this.currentData));
+      },
       ...stateManagerOptions
     });
   }
@@ -150,7 +153,7 @@ class DataStateManager<DataType>
       };
 
     return states.map(({ name, transitions }) => {
-      let stateTransitions: StateTransitionsInterface = {
+      let stateTransitions: Required<StateTransitionsInterface> = {
         from: {
           states: [],
           observers: []

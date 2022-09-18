@@ -8,11 +8,11 @@ import type {
 import type { CollectionStateEventInterface } from "./collection-state-event/collection-state-event";
 
 interface CollectionStateTransitionsInterface {
-  from: {
+  from?: {
     states: Array<string>;
     observers: Array<CollectionStateObserverInterface>;
   };
-  to: {
+  to?: {
     states: Array<string>;
     observers: Array<CollectionStateObserverInterface>;
   };

@@ -8,11 +8,11 @@ import type {
 import type { DataStateEventInterface } from "./data-state-event/data-state-event";
 
 interface DataStateTransitionsInterface<DataType> {
-  from: {
+  from?: {
     states: Array<string>;
     observers: Array<DataStateObserverInterface<DataType>>;
   };
-  to: {
+  to?: {
     states: Array<string>;
     observers: Array<DataStateObserverInterface<DataType>>;
   };
