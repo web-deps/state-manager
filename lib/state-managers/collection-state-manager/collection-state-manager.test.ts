@@ -165,61 +165,6 @@ describe("CollectionStateManager observers", () => {
   });
 });
 
-describe("CollectionStateManager suspense", () => {
-  it("puts CollectionStateManager in suspense with empty collection", () => {
-    let suspenseCombination;
-
-    const textFormat = new CollectionStateManager({
-      initialState: "normal",
-      states: [...textFormatStates],
-      ordered: true,
-      onSuspense: ({ collectionStateManager, combination }) => {
-        suspenseCombination = combination;
-      }
-    });
-
-    textFormat.popItem();
-    expect(textFormat.current).toBe("normal");
-    expect(textFormat.currentCombination).toEqual(["normal"]);
-    expect(suspenseCombination).toEqual([]);
-  });
-
-  it("puts CollectionStateManager in suspense with wrong combination of items", () => {
-    let suspenseCombination;
-
-    const textFormat = new CollectionStateManager({
-      initialState: "normal",
-      states: [...textFormatStates],
-      onSuspense: ({ collectionStateManager, combination }) => {
-        suspenseCombination = combination;
-      }
-    });
-
-    textFormat.appendItem("bold");
-    expect(textFormat.current).toBe("normal");
-    expect(textFormat.currentCombination).toEqual(["normal"]);
-    expect(suspenseCombination).toEqual(["normal", "bold"]);
-  });
-
-  it("puts CollectionStateManager in suspense with wrong order of items", () => {
-    let suspenseCombination;
-
-    const textFormat = new CollectionStateManager({
-      initialState: "italic",
-      states: [...textFormatStates],
-      ordered: true,
-      onSuspense: ({ collectionStateManager, combination }) => {
-        suspenseCombination = combination;
-      }
-    });
-
-    textFormat.appendItem("bold");
-    expect(textFormat.current).toBe("italic");
-    expect(textFormat.currentCombination).toEqual(["italic"]);
-    expect(suspenseCombination).toEqual(["italic", "bold"]);
-  });
-});
-
 describe("CollectionStateManager history", () => {
   it("change and track CollectionStateManager previous value", () => {
     const textFormat = new CollectionStateManager({
@@ -310,5 +255,103 @@ describe("CollectionStateManager transitions", () => {
     textFormat.replaceItem("bold", "normal");
     expect(transitionFlags.to).toBe("normal");
     expect(transitionFlags.from).toBe("bold");
+  });
+});
+
+describe("CollectionStateManager suspense", () => {
+  it("puts CollectionStateManager in suspense with empty collection", () => {
+    let suspenseCombination;
+
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: [...textFormatStates],
+      ordered: true,
+      onSuspense: ({ collectionStateManager, combination }) => {
+        suspenseCombination = combination;
+      }
+    });
+
+    textFormat.popItem();
+    expect(textFormat.current).toBe("normal");
+    expect(textFormat.currentCombination).toEqual(["normal"]);
+    expect(suspenseCombination).toEqual([]);
+  });
+
+  it("puts CollectionStateManager in suspense with wrong combination of items", () => {
+    let suspenseCombination;
+
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: [...textFormatStates],
+      onSuspense: ({ collectionStateManager, combination }) => {
+        suspenseCombination = combination;
+      }
+    });
+
+    textFormat.appendItem("bold");
+    expect(textFormat.current).toBe("normal");
+    expect(textFormat.currentCombination).toEqual(["normal"]);
+    expect(suspenseCombination).toEqual(["normal", "bold"]);
+  });
+
+  it("puts CollectionStateManager in suspense with wrong order of items", () => {
+    let suspenseCombination;
+
+    const textFormat = new CollectionStateManager({
+      initialState: "italic",
+      states: [...textFormatStates],
+      ordered: true,
+      onSuspense: ({ collectionStateManager, combination }) => {
+        suspenseCombination = combination;
+      }
+    });
+
+    textFormat.appendItem("bold");
+    expect(textFormat.current).toBe("italic");
+    expect(textFormat.currentCombination).toEqual(["italic"]);
+    expect(suspenseCombination).toEqual(["italic", "bold"]);
+  });
+
+  it("should put CollectionStateManager in suspense with illegal state transition", () => {
+    let transitionFlags = {
+      from: "",
+      to: ""
+    };
+
+    const textFormatStatesWithTransitions = textFormatStates.map(
+      ({ name, combination }) => {
+        const otherState = name == "normal" ? "bold" : "normal";
+
+        return {
+          name,
+          combination,
+          transitions: {
+            from: {
+              states: [otherState],
+              observers: [
+                () => {
+                  transitionFlags.from = otherState;
+                }
+              ]
+            }
+          }
+        };
+      }
+    );
+
+    let inSuspense = false;
+
+    const textFormat = new CollectionStateManager({
+      initialState: "normal",
+      states: textFormatStatesWithTransitions,
+      onSuspense: () => {
+        inSuspense = true;
+      }
+    });
+
+    expect(textFormat.current).toBe("normal");
+    textFormat.replaceItem("normal", "bold");
+    expect(textFormat.current).toBe("normal");
+    expect(inSuspense).toBe(true);
   });
 });

@@ -258,3 +258,47 @@ describe("DataStateManager transitions", () => {
     expect(transitionFlags.from).toBe("high");
   });
 });
+
+describe("DataStateManager suspense", () => {
+  let transitionFlags = {
+    from: "",
+    to: ""
+  };
+
+  const volumeStatesWithTransitions = volumeStates.map(({ name, matches }) => {
+    const otherState = name == "low" ? "high" : "low";
+
+    return {
+      name,
+      matches,
+      transitions: {
+        from: {
+          states: [otherState],
+          observers: [
+            () => {
+              transitionFlags.from = otherState;
+            }
+          ]
+        }
+      }
+    };
+  });
+
+  it("should put DataStateManager in suspense", () => {
+    let inSuspense = false;
+
+    const volume = new DataStateManager<number>({
+      initialState: "low",
+      initialData: 50,
+      states: volumeStatesWithTransitions,
+      onSuspense: () => {
+        inSuspense = true;
+      }
+    });
+
+    expect(volume.current).toBe("low");
+    volume.update(90);
+    expect(volume.current).toBe("low");
+    expect(inSuspense).toBe(true);
+  });
+});

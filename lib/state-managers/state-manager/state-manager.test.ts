@@ -265,7 +265,7 @@ describe("StateManager suspense", () => {
     };
   });
 
-  it("should put StateManager ins suspense", () => {
+  it("should put StateManager in suspense", () => {
     let inSuspense = false;
 
     const color = new StateManager({
