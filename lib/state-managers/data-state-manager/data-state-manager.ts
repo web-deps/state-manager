@@ -21,7 +21,9 @@ import type {
   DataStateContextOptionsInterface
 } from "./data-state-manager.types";
 
-import DataStateEvent from "./data-state-event/data-state-event";
+import DataStateEvent, {
+  DataStateEventInterface
+} from "./data-state-event/data-state-event";
 import { StateTransitionsInterface } from "../state-manager/state-manager.types";
 
 class DataStateManager<DataType>
@@ -42,12 +44,14 @@ class DataStateManager<DataType>
       context,
       initialData,
       onUpdate,
+      onSuspense,
       ...stateManagerOptions
     } = options;
 
     this.currentData = initialData;
     let stateManagerStates: StateManagerOptionsInterface["states"];
     if (onUpdate) this.onUpdate = onUpdate;
+    if (onSuspense) this.onSuspense = onSuspense;
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
@@ -232,6 +236,18 @@ class DataStateManager<DataType>
         observer(new DataStateEvent(name, this, this.currentData));
       }
     }
+  }
+
+  onSuspense(
+    dataStateEvent: DataStateEventInterface<
+      DataStateManagerInterface<DataType>,
+      DataType
+    >
+  ) {
+    throw new Error(`
+      Failed to transition state.
+      Transition from ${this.current} to ${dataStateEvent.name} is not allowed.
+    `);
   }
 }
 

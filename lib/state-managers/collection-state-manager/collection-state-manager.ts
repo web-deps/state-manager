@@ -20,7 +20,9 @@ import type {
   CollectionStateOptionsInterface
 } from "./collection-state-manager.types";
 
-import CollectionStateEvent from "./collection-state-event/collection-state-event";
+import CollectionStateEvent, {
+  CollectionStateEventInterface
+} from "./collection-state-event/collection-state-event";
 import { StateTransitionsInterface } from "../state-manager/state-manager.types";
 
 class CollectionStateManager {
@@ -221,7 +223,9 @@ class CollectionStateManager {
 
     if (!found) {
       this.inSuspense = true;
-      this.onSuspense(this, combination);
+      this.onSuspense(
+        new CollectionStateEvent(this.current, this, combination)
+      );
     }
   }
 
@@ -387,9 +391,10 @@ class CollectionStateManager {
   }
 
   onSuspense(
-    collectionStateManager: CollectionStateManagerInterface,
-    combination: Array<string>
+    collectionStateEvent: CollectionStateEventInterface<CollectionStateManagerInterface>
   ) {
+    const { collectionStateManager, combination } = collectionStateEvent;
+
     throw new Error(`
       Failed to set combination on ${this.name}. 
       Combination [${combination.join(", ")}] does not match any state.

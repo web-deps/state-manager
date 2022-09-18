@@ -45,8 +45,7 @@ interface CollectionStateOptionInterface {
 
 interface CollectionStateSuspenseHandlerInterface {
   (
-    collectionStateManager: CollectionStateManagerInterface,
-    combination: Array<string>
+    collectionStateEvent: CollectionStateEventInterface<CollectionStateManagerInterface>
   ): void | never;
 }
 
@@ -55,7 +54,10 @@ interface CollectionStateContextOptionsInterface {
 }
 
 interface CollectionStateOptionsInterface
-  extends Omit<StateManagerOptionsInterface, "states" | "contexts"> {
+  extends Omit<
+    StateManagerOptionsInterface,
+    "states" | "contexts" | "onSuspense"
+  > {
   states?: Array<CollectionStateOptionInterface>;
   contexts?: CollectionStateContextOptionsInterface;
   ordered?: boolean;

@@ -51,16 +51,27 @@ interface DataUpdateHandlerInterface<DataType> {
   (data: DataType): void;
 }
 
+type DataStateSuspenseHandlerType<DataType> = (
+  dataStateEvent: DataStateEventInterface<
+    DataStateManagerInterface<DataType>,
+    DataType
+  >
+) => void | never;
+
 interface DataStateContextOptionsInterface<DataType> {
   [name: string]: Array<DataStateOptionInterface<DataType>>;
 }
 
 interface DataStateOptionsInterface<DataType>
-  extends Omit<StateManagerOptionsInterface, "states" | "contexts"> {
+  extends Omit<
+    StateManagerOptionsInterface,
+    "states" | "contexts" | "onSuspense"
+  > {
   states?: Array<DataStateOptionInterface<DataType>>;
   contexts?: DataStateContextOptionsInterface<DataType>;
   initialData: DataType;
   onUpdate?: DataUpdateHandlerInterface<DataType>;
+  onSuspense?: DataStateSuspenseHandlerType<DataType>;
 }
 
 interface DataStateManagerInterface<DataType> {
@@ -90,6 +101,7 @@ interface DataStateManagerInterface<DataType> {
   notifyObservers: StateObserverInterface;
   update: (data: DataType) => void;
   onUpdate?: DataUpdateHandlerInterface<DataType>;
+  onSuspense: DataStateSuspenseHandlerType<DataType>;
 }
 
 export type {

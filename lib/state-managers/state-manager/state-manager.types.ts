@@ -42,7 +42,7 @@ interface StateContextOptionsInterface {
 
 type SuspenseHandlerType = (
   stateEvent: StateEventInterface<StateManagerInterface>
-) => void;
+) => void | never;
 
 interface EventObserversInterface {
   [event: string]: {
