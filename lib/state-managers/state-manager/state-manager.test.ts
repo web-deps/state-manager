@@ -240,3 +240,45 @@ describe("StateManager transitions", () => {
     expect(transitionFlags.from).toBe("blue");
   });
 });
+
+describe("StateManager suspense", () => {
+  let transitionFlags = {
+    from: "",
+    to: ""
+  };
+
+  const colorStatesWithTransitions = colorStates.map(({ name }) => {
+    const otherState = name == "red" ? "blue" : "red";
+
+    return {
+      name,
+      transitions: {
+        from: {
+          states: [otherState],
+          observers: [
+            () => {
+              transitionFlags.from = otherState;
+            }
+          ]
+        }
+      }
+    };
+  });
+
+  it("should put StateManager ins suspense", () => {
+    let inSuspense = false;
+
+    const color = new StateManager({
+      initialState: "red",
+      states: colorStatesWithTransitions,
+      onSuspense: () => {
+        inSuspense = true;
+      }
+    });
+
+    expect(color.current).toBe("red");
+    color.current = "blue";
+    expect(color.current).toBe("red");
+    expect(inSuspense).toBe(true);
+  });
+});
