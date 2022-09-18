@@ -6,11 +6,11 @@ import type {
 import type { StateEventInterface } from "./state-event/state-event";
 
 interface StateTransitionsInterface {
-  from: {
+  from?: {
     states: Array<string>;
     observers: Array<StateObserverInterface>;
   };
-  to: {
+  to?: {
     states: Array<string>;
     observers: Array<StateObserverInterface>;
   };

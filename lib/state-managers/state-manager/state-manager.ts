@@ -102,7 +102,8 @@ class StateManager implements StateManagerInterface {
         return;
       }
 
-      const onBeforeTransitionObservers = currentStateTransitions.to.observers;
+      const onBeforeTransitionObservers =
+        currentStateTransitions?.to?.observers;
 
       if (onBeforeTransitionObservers) {
         for (const observer of onBeforeTransitionObservers) {
