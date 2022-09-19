@@ -25,9 +25,17 @@
     "type": "git",
     "url": "git+https://github.com/Mishieck/state-manager.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "state",
+    "state-management",
+    "state-machines",
+    "observer-pattern",
+    "typescript",
+    "javascript",
+    "nodejs"
+  ],
+  "author": "Mishieck Mwale",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Mishieck/state-manager/issues"
   },
