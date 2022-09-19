@@ -1,7 +1,7 @@
 {
   "name": "state-manager",
   "version": "0.1.0",
-  "description": "A JavaScript library for creating Web Components.",
+  "description": "A JavaScript library for state management and automation. It can be used for both frontend and backend apps.",
   "files": [
     "dist"
   ],
