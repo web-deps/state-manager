@@ -238,13 +238,18 @@ class StateManager implements StateManagerInterface {
   }
 }
 
-export default StateManager;
+export { StateManager, StateEvent };
+
 export type {
-  StateManagerInterface,
-  StateManagerOptionsInterface,
-  StateObserversInterface,
   StateOptionInterface,
-  StateContextOptionsInterface,
   StateObserverInterface,
+  StateObserversInterface,
+  EventObserversInterface,
+  StateContextOptionsInterface,
+  StateManagerOptionsInterface,
+  StateManagerInterface,
+  StateTransitionsInterface,
+  StateTransitionCollectionInterface,
+  SuspenseHandlerType,
   StateEventInterface
 };

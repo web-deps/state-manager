@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import DataStateManager from "./data-state-manager";
+import { DataStateManager } from "./data-state-manager";
+
 import type {
   DataStateObserverInterface,
   DataStateOptionInterface

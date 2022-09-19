@@ -1,4 +1,6 @@
-import StateManager, {
+import { StateManager } from "../state-manager/state-manager";
+
+import type {
   StateEventInterface,
   StateOptionInterface
 } from "../state-manager/state-manager";
@@ -18,7 +20,8 @@ import type {
   DataTesterInterface,
   DataTestItemInterface,
   DataUpdateHandlerInterface,
-  DataStateContextOptionsInterface
+  DataStateContextOptionsInterface,
+  DataStateSuspenseHandlerType
 } from "./data-state-manager.types";
 
 import DataStateEvent, {
@@ -254,10 +257,18 @@ class DataStateManager<DataType>
   }
 }
 
-export default DataStateManager;
+export { DataStateManager, DataStateEvent };
+
 export type {
   DataStateManagerInterface,
-  DataStateObserverInterface,
   DataStateOptionInterface,
-  DataStateEvent
+  DataStateOptionsInterface,
+  DataStateObserverInterface,
+  DataStateObserversInterface,
+  DataTesterInterface,
+  DataTestItemInterface,
+  DataUpdateHandlerInterface,
+  DataStateContextOptionsInterface,
+  DataStateSuspenseHandlerType,
+  DataStateEventInterface
 };

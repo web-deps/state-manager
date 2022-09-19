@@ -114,5 +114,6 @@ export type {
   DataTestItemInterface,
   DataUpdateHandlerInterface,
   DataStateContextOptionsInterface,
-  DataStateTransitionsInterface
+  DataStateTransitionsInterface,
+  DataStateSuspenseHandlerType
 };

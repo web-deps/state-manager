@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
-import StateManager, { StateManagerInterface } from "./state-manager";
-import type { StateOptionInterface } from "./state-manager";
+import { StateManager } from "./state-manager";
+import type {
+  StateManagerInterface,
+  StateOptionInterface
+} from "./state-manager";
 
 const colorStates = [
   { name: "red" },

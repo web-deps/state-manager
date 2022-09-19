@@ -1,6 +1,6 @@
-import StateManager, {
-  StateObserverInterface
-} from "../state-manager/state-manager";
+import { StateManager } from "../state-manager/state-manager";
+
+import type { StateObserverInterface } from "../state-manager/state-manager";
 
 import type {
   StateManagerInterface,
@@ -17,7 +17,8 @@ import type {
   CollectionStateSuspenseHandlerInterface,
   CollectionStateManagerInterface,
   CollectionStateContextOptionsInterface,
-  CollectionStateOptionsInterface
+  CollectionStateOptionsInterface,
+  CollectionStateTransitionsInterface
 } from "./collection-state-manager.types";
 
 import CollectionStateEvent, {
@@ -407,9 +408,18 @@ class CollectionStateManager {
   }
 }
 
-export default CollectionStateManager;
+export { CollectionStateManager, CollectionStateEvent };
+
 export type {
   CollectionStateManagerInterface,
+  CollectionStateObserverInterface,
+  CollectionStateObserversInterface,
+  CollectionStateCombinationsInterface,
+  CombinationMatcherInterface,
   CollectionStateOptionInterface,
-  CollectionStateOptionsInterface
+  CollectionStateSuspenseHandlerInterface,
+  CollectionStateContextOptionsInterface,
+  CollectionStateOptionsInterface,
+  CollectionStateTransitionsInterface,
+  CollectionStateEventInterface
 };

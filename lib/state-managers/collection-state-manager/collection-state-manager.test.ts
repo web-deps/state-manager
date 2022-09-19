@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import CollectionStateManager from "./collection-state-manager";
+import { CollectionStateManager } from "./collection-state-manager";
 import type { CollectionStateOptionInterface } from "./collection-state-manager";
 
 let textFormatStates = [
