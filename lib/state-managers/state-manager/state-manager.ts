@@ -8,6 +8,7 @@ import type {
 
 import StateEvent from "./state-event/state-event";
 import type { StateEventInterface } from "./state-event/state-event";
+import AbstractStateManager from "./abstract-state-manager";
 
 import type {
   StateOptionInterface,
@@ -16,7 +17,6 @@ import type {
   EventObserversInterface,
   StateContextOptionsInterface,
   StateManagerOptionsInterface,
-  StateManagerInterface,
   StateTransitionsInterface,
   StateTransitionCollectionInterface,
   SuspenseHandlerType
@@ -24,11 +24,20 @@ import type {
 
 // Use more specific error types
 
-class StateManager implements StateManagerInterface {
+const suspenseHandler: SuspenseHandlerType = function (
+  stateEvent: StateEventInterface<AbstractStateManager>
+) {
+  throw new Error(`
+    Failed to transition state. 
+    Transition from ${stateEvent.stateManager.current} to ${stateEvent.name} is not allowed.
+  `);
+};
+
+class StateManager extends AbstractStateManager {
   readonly name: string;
-  public _current: string;
+  protected _current: string;
   public readonly eventManager: AbstractEventEmitter<
-    StateManagerInterface,
+    AbstractStateManager,
     unknown
   >;
   public previous: string | null = null;
@@ -37,8 +46,11 @@ class StateManager implements StateManagerInterface {
   public readonly saveHistory: boolean;
   public readonly observers: EventObserversInterface = {};
   public readonly transitions: { [state: string]: StateTransitionsInterface };
+  public onSuspense: SuspenseHandlerType = suspenseHandler;
 
   constructor(options: StateManagerOptionsInterface) {
+    super();
+
     const {
       name = "StateManager",
       states,
@@ -144,7 +156,7 @@ class StateManager implements StateManagerInterface {
 
   createEventManager(
     states: StateOptionInterface[]
-  ): AbstractEventEmitter<StateManagerInterface, unknown> {
+  ): AbstractEventEmitter<AbstractStateManager, unknown> {
     return states.reduce((eventManager, { name, observers }) => {
       if (!this.observers[name])
         this.observers[name] = {
@@ -174,7 +186,7 @@ class StateManager implements StateManagerInterface {
     stateObserver: StateObserverInterface
   ): EventObserverType {
     return ({ name }) => {
-      stateObserver(new StateEvent<StateManagerInterface>(name, this));
+      stateObserver(new StateEvent<AbstractStateManager>(name, this));
     };
   }
 
@@ -229,13 +241,6 @@ class StateManager implements StateManagerInterface {
       `);
     }
   }
-
-  onSuspense(stateEvent: StateEventInterface<StateManagerInterface>) {
-    throw new Error(`
-      Failed to transition state. 
-      Transition from ${this.current} to ${stateEvent.name} is not allowed.
-    `);
-  }
 }
 
 export { StateManager, StateEvent };
@@ -247,7 +252,7 @@ export type {
   EventObserversInterface,
   StateContextOptionsInterface,
   StateManagerOptionsInterface,
-  StateManagerInterface,
+  AbstractStateManager,
   StateTransitionsInterface,
   StateTransitionCollectionInterface,
   SuspenseHandlerType,

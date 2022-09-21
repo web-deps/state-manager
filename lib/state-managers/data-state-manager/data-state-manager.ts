@@ -6,7 +6,7 @@ import type {
 } from "../state-manager/state-manager";
 
 import type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateManagerOptionsInterface,
   StateObserverInterface
 } from "../state-manager/state-manager";
@@ -32,7 +32,7 @@ import { StateTransitionsInterface } from "../state-manager/state-manager.types"
 class DataStateManager<DataType>
   implements DataStateManagerInterface<DataType>
 {
-  public stateManager: StateManagerInterface;
+  public stateManager: AbstractStateManager;
   public currentData: DataType;
   public readonly context?: string;
   public tests: Array<DataTestItemInterface<DataType>> = [];
@@ -145,7 +145,7 @@ class DataStateManager<DataType>
       (
         dataStateObserver: DataStateObserverInterface<DataType>
       ): StateObserverInterface =>
-      (stateEvent: StateEventInterface<StateManagerInterface>) => {
+      (stateEvent: StateEventInterface<AbstractStateManager>) => {
         dataStateObserver(
           new DataStateEvent<DataStateManagerInterface<DataType>, DataType>(
             stateEvent.name,
@@ -233,7 +233,7 @@ class DataStateManager<DataType>
     if (observerIndex > -1) observers.splice(observerIndex, 1);
   }
 
-  notifyObservers(stateEvent: StateEventInterface<StateManagerInterface>) {
+  notifyObservers(stateEvent: StateEventInterface<AbstractStateManager>) {
     const { name, stateManager } = stateEvent;
     const observers = this.observers[stateManager.current];
 

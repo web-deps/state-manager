@@ -3,7 +3,7 @@ import { StateManager } from "../state-manager/state-manager";
 import type { StateObserverInterface } from "../state-manager/state-manager";
 
 import type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateOptionInterface,
   StateEventInterface
 } from "../state-manager/state-manager";
@@ -27,7 +27,7 @@ import CollectionStateEvent, {
 import { StateTransitionsInterface } from "../state-manager/state-manager.types";
 
 class CollectionStateManager {
-  public stateManager: StateManagerInterface;
+  public stateManager: AbstractStateManager;
   currentCombination: Array<string> = [];
   observers: CollectionStateObserversInterface = {};
   public readonly context?: string;
@@ -150,7 +150,7 @@ class CollectionStateManager {
       (
         collectionStateObserver: CollectionStateObserverInterface
       ): StateObserverInterface =>
-      (stateEvent: StateEventInterface<StateManagerInterface>) => {
+      (stateEvent: StateEventInterface<AbstractStateManager>) => {
         collectionStateObserver(
           new CollectionStateEvent<CollectionStateManagerInterface>(
             stateEvent.name,
@@ -287,7 +287,7 @@ class CollectionStateManager {
     if (index > -1) observers.splice(index, 1);
   }
 
-  notifyObservers(stateEvent: StateEventInterface<StateManagerInterface>) {
+  notifyObservers(stateEvent: StateEventInterface<AbstractStateManager>) {
     const { name, stateManager } = stateEvent;
     const observers = this.observers[stateManager.current];
 

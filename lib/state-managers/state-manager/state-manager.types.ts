@@ -4,6 +4,7 @@ import type {
   EventObserverType
 } from "@web-deps/event-manager";
 import type { StateEventInterface } from "./state-event/state-event";
+import AbstractStateManager from "./abstract-state-manager";
 
 interface StateTransitionsInterface {
   from?: {
@@ -28,7 +29,7 @@ interface StateOptionInterface {
 
 interface StateObserverInterface {
   (
-    stateManagerEvent: StateEventInterface<StateManagerInterface>
+    stateManagerEvent: StateEventInterface<AbstractStateManager>
   ): void | Promise<void>;
 }
 
@@ -41,7 +42,7 @@ interface StateContextOptionsInterface {
 }
 
 type SuspenseHandlerType = (
-  stateEvent: StateEventInterface<StateManagerInterface>
+  stateEvent: StateEventInterface<AbstractStateManager>
 ) => void | never;
 
 interface EventObserversInterface {
@@ -61,37 +62,6 @@ interface StateManagerOptionsInterface {
   onSuspense?: SuspenseHandlerType;
 }
 
-interface StateManagerInterface {
-  name: string;
-  _current: string;
-  current: string;
-  readonly eventManager: AbstractEventEmitter<StateManagerInterface, unknown>;
-  previous: string | null;
-  history: Array<string>;
-  readonly context?: string;
-  readonly saveHistory: boolean;
-  readonly events: Array<string>;
-  readonly eventIsRegistered: (state: string) => boolean;
-  readonly observers: EventObserversInterface;
-  readonly transitions: StateTransitionCollectionInterface;
-  createEventManager: (
-    states: Array<StateOptionInterface>
-  ) => AbstractEventEmitter<StateManagerInterface, unknown>;
-  getEvents: (states: Array<StateOptionInterface>) => Array<string>;
-  createEventManagerObserver: (
-    stateObserver: StateObserverInterface
-  ) => EventObserverType;
-  createEventObservers: (
-    states: Array<StateOptionInterface>
-  ) => EventObserversInterface;
-  createStateTransitions: (
-    states: Array<StateOptionInterface>
-  ) => StateTransitionCollectionInterface;
-  addObserver: (state: string, observer: StateObserverInterface) => void;
-  removeObserver: (state: string, observer: StateObserverInterface) => void;
-  onSuspense: SuspenseHandlerType;
-}
-
 export type {
   StateOptionInterface,
   StateObserverInterface,
@@ -99,7 +69,6 @@ export type {
   EventObserversInterface,
   StateContextOptionsInterface,
   StateManagerOptionsInterface,
-  StateManagerInterface,
   StateTransitionsInterface,
   StateTransitionCollectionInterface,
   SuspenseHandlerType

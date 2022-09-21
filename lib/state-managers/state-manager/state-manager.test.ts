@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { StateManager } from "./state-manager";
 import type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateOptionInterface
 } from "./state-manager";
 
