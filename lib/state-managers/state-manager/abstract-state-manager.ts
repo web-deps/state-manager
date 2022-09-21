@@ -45,7 +45,7 @@ abstract class AbstractStateManager {
     state: string,
     observer: StateObserverInterface
   ): void;
-  abstract onSuspense: SuspenseHandlerType & ThisType<AbstractStateManager>;
+  abstract onSuspense: SuspenseHandlerType;
 }
 
 export default AbstractStateManager;
