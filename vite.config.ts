@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "lib/main.ts"),
-      name: "stateManager",
+      name: "StateManager",
       fileName: (format) => `state-manager.${format}.js`
     }
   },
