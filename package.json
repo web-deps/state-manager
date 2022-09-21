@@ -49,7 +49,6 @@
     "vitest": "^0.23.1"
   },
   "dependencies": {
-    "@web-deps/event-manager": "^0.2.2",
-    "eve-man": "^1.2.1"
+    "@web-deps/event-manager": "^0.2.2"
   }
 }
