@@ -1,5 +1,5 @@
-import { EventEmitter, Event } from 'eve-man';
-import type { EventInterface } from 'eve-man';
+import { EventEmitter, Event } from "@web-deps/event-manager";
+import type { EventInterface } from "@web-deps/event-manager";
 
 interface StateEventInterface<StateManagerInterface> {
   readonly name: string;

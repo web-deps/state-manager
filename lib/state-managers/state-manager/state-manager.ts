@@ -1,10 +1,10 @@
-import { EventEmitter } from "eve-man";
+import { EventEmitter } from "@web-deps/event-manager";
 
 import type {
   AbstractEventEmitter,
   EventInterface,
   EventObserverType
-} from "eve-man";
+} from "@web-deps/event-manager";
 
 import StateEvent from "./state-event/state-event";
 import type { StateEventInterface } from "./state-event/state-event";
@@ -173,8 +173,8 @@ class StateManager implements StateManagerInterface {
   createEventManagerObserver(
     stateObserver: StateObserverInterface
   ): EventObserverType {
-    return ({ name, subject }) => {
-      stateObserver(new StateEvent(name, subject));
+    return ({ name }) => {
+      stateObserver(new StateEvent<StateManagerInterface>(name, this));
     };
   }
 

@@ -2,7 +2,7 @@ import type {
   AbstractEventEmitter,
   EventInterface,
   EventObserverType
-} from "eve-man";
+} from "@web-deps/event-manager";
 import type { StateEventInterface } from "./state-event/state-event";
 
 interface StateTransitionsInterface {
