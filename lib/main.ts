@@ -14,7 +14,7 @@ export {
 } from "./state-managers/collection-state-manager/collection-state-manager";
 
 export type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateEventInterface,
   StateOptionInterface,
   StateObserverInterface,
