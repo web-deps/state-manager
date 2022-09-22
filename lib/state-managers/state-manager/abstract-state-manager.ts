@@ -30,16 +30,9 @@ abstract class AbstractStateManager {
   abstract createEventManager(
     states: Array<StateOptionInterface>
   ): AbstractEventEmitter<AbstractStateManager, unknown>;
-  abstract getEvents(states: Array<StateOptionInterface>): Array<string>;
   abstract createEventManagerObserver(
     stateObserver: StateObserverInterface
   ): EventObserverType;
-  abstract createEventObservers(
-    states: Array<StateOptionInterface>
-  ): EventObserversInterface;
-  abstract createStateTransitions(
-    states: Array<StateOptionInterface>
-  ): StateTransitionCollectionInterface;
   abstract addObserver(state: string, observer: StateObserverInterface): void;
   abstract removeObserver(
     state: string,
@@ -49,3 +42,4 @@ abstract class AbstractStateManager {
 }
 
 export default AbstractStateManager;
+export type { AbstractStateManager };

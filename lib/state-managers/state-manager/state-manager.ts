@@ -9,6 +9,9 @@ import type {
 import StateEvent from "./state-event/state-event";
 import type { StateEventInterface } from "./state-event/state-event";
 import AbstractStateManager from "./abstract-state-manager";
+import suspenseHandler from "./suspense-handler";
+import getEventNames from "./get-event-names";
+import createStateTransitions from "./create-state-transitions";
 
 import type {
   StateOptionInterface,
@@ -23,15 +26,6 @@ import type {
 } from "./state-manager.types";
 
 // Use more specific error types
-
-const suspenseHandler: SuspenseHandlerType = function (
-  stateEvent: StateEventInterface<AbstractStateManager>
-) {
-  throw new Error(`
-    Failed to transition state. 
-    Transition from ${stateEvent.stateManager.current} to ${stateEvent.name} is not allowed.
-  `);
-};
 
 class StateManager extends AbstractStateManager {
   readonly name: string;
@@ -68,14 +62,14 @@ class StateManager extends AbstractStateManager {
 
     if (states) {
       this.eventManager = this.createEventManager(states);
-      this.transitions = this.createStateTransitions(states);
+      this.transitions = createStateTransitions(states);
     } else if (contexts) {
       if (context) {
         const states = contexts[context];
 
         if (states) {
           this.eventManager = this.createEventManager(states);
-          this.transitions = this.createStateTransitions(states);
+          this.transitions = createStateTransitions(states);
           this.context = context;
         } else throw new Error(`Context ${context} is not listed in contexts.`);
       } else
@@ -175,11 +169,7 @@ class StateManager extends AbstractStateManager {
       }
 
       return eventManager;
-    }, new EventEmitter(this, this.getEvents(states)));
-  }
-
-  getEvents(states: Array<StateOptionInterface>): Array<string> {
-    return states.map(({ name }) => name);
+    }, new EventEmitter(this, getEventNames(states)));
   }
 
   createEventManagerObserver(
@@ -188,32 +178,6 @@ class StateManager extends AbstractStateManager {
     return ({ name }) => {
       stateObserver(new StateEvent<AbstractStateManager>(name, this));
     };
-  }
-
-  createEventObservers(states: Array<StateOptionInterface>) {
-    if (states.length < 2)
-      throw new Error(`
-      Failed to create observers. You need to provide at least 2 states.
-    `);
-
-    return states.reduce((allObservers, { name, observers }) => {
-      if (!Array.isArray(observers)) observers = [];
-
-      return {
-        ...allObservers,
-        [name]: observers
-      };
-    }, {});
-  }
-
-  createStateTransitions(
-    states: StateOptionInterface[]
-  ): StateTransitionCollectionInterface {
-    return states.reduce((allTransitions, { name, transitions }) => {
-      return transitions
-        ? { ...allTransitions, [name]: transitions }
-        : allTransitions;
-    }, {});
   }
 
   addObserver(state: string, observer: StateObserverInterface) {
