@@ -12,10 +12,10 @@ import type {
 } from "./state-manager.types";
 
 abstract class AbstractStateManager {
-  abstract name: string;
+  abstract readonly name: string;
   protected abstract _current: string;
   abstract current: string;
-  abstract readonly eventManager: AbstractEventEmitter<
+  protected abstract eventManager: AbstractEventEmitter<
     AbstractStateManager,
     unknown
   >;
@@ -25,8 +25,8 @@ abstract class AbstractStateManager {
   abstract readonly saveHistory: boolean;
   abstract observers: EventObserversInterface;
   abstract readonly transitions: StateTransitionCollectionInterface;
-  abstract readonly events: Array<string>;
-  abstract eventIsRegistered(state: string): boolean;
+  abstract readonly states: Array<string>;
+  abstract stateIsRegistered(state: string): boolean;
   abstract createEventManager(
     states: Array<StateOptionInterface>
   ): AbstractEventEmitter<AbstractStateManager, unknown>;
