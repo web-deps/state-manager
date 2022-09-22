@@ -28,6 +28,7 @@ import DataStateEvent, {
   DataStateEventInterface
 } from "./data-state-event/data-state-event";
 import { StateTransitionsInterface } from "../state-manager/state-manager.types";
+import createObservers from "./create-observers";
 
 class DataStateManager<DataType>
   implements DataStateManagerInterface<DataType>
@@ -58,7 +59,7 @@ class DataStateManager<DataType>
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
-      this.observers = this.createObservers(states);
+      this.observers = createObservers<DataType>(states);
 
       this.tests = states.map(({ name, matches }) => ({
         state: name,
@@ -89,7 +90,7 @@ class DataStateManager<DataType>
       }
 
       this.context = context;
-      this.observers = this.createObservers(states);
+      this.observers = createObservers<DataType>(states);
       stateManagerStates = this.createStateManagerStates(states);
 
       this.tests = states.map(({ name, matches }) => ({
@@ -126,18 +127,6 @@ class DataStateManager<DataType>
 
   get history() {
     return this.stateManager.history;
-  }
-
-  createObservers(
-    states: DataStateOptionInterface<DataType>[]
-  ): DataStateObserversInterface<DataType> {
-    return states.reduce(
-      (allObservers, { name, observers }) => ({
-        ...allObservers,
-        [name]: observers
-      }),
-      {}
-    );
   }
 
   createStateManagerStates(states: Array<DataStateOptionInterface<DataType>>) {

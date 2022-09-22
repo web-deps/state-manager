@@ -1,5 +1,5 @@
 import type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateOptionInterface,
   StateManagerOptionsInterface,
   StateObserverInterface
@@ -76,7 +76,7 @@ interface DataStateOptionsInterface<DataType>
 
 interface DataStateManagerInterface<DataType> {
   name: string;
-  stateManager: StateManagerInterface;
+  stateManager: AbstractStateManager;
   current: string;
   readonly currentData: DataType;
   readonly context?: string;
@@ -84,9 +84,6 @@ interface DataStateManagerInterface<DataType> {
   readonly history: Array<string>;
   readonly tests: Array<DataTestItemInterface<DataType>>;
   observers: DataStateObserversInterface<DataType>;
-  createObservers: (
-    states: Array<DataStateOptionInterface<DataType>>
-  ) => DataStateObserversInterface<DataType>;
   createStateManagerStates: (
     states: Array<DataStateOptionInterface<DataType>>
   ) => Array<StateOptionInterface>;
