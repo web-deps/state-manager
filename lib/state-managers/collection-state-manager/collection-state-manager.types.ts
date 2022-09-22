@@ -1,5 +1,5 @@
 import type {
-  StateManagerInterface,
+  AbstractStateManager,
   StateOptionInterface,
   StateEventInterface,
   StateManagerOptionsInterface
@@ -67,7 +67,7 @@ interface CollectionStateOptionsInterface
 
 interface CollectionStateManagerInterface {
   readonly name: string;
-  readonly stateManager: StateManagerInterface;
+  readonly stateManager: AbstractStateManager;
   readonly current: string;
   readonly currentCombination: Array<string>;
   readonly previous: string | null;
@@ -80,18 +80,9 @@ interface CollectionStateManagerInterface {
   readonly combinations: CollectionStateCombinationsInterface;
   readonly collection: Set<string>;
   readonly inSuspense: boolean;
-  createObservers: (
-    states: Array<CollectionStateOptionInterface>
-  ) => CollectionStateObserversInterface;
   createStateManagerStates: (
     states: Array<CollectionStateOptionInterface>
   ) => Array<StateOptionInterface>;
-  createCombinations: (
-    states: Array<CollectionStateOptionInterface>
-  ) => CollectionStateCombinationsInterface;
-  createCollection: (
-    combinations: CollectionStateCombinationsInterface
-  ) => Set<string>;
   setCombination: (combination: Array<string>) => void;
   addObserver: (
     state: string,
@@ -102,10 +93,8 @@ interface CollectionStateManagerInterface {
     observer: CollectionStateObserverInterface
   ) => void;
   notifyObservers: (
-    stateEvent: StateEventInterface<StateManagerInterface>
+    stateEvent: StateEventInterface<AbstractStateManager>
   ) => void;
-  matchesCombinationWithOrder: CombinationMatcherInterface;
-  matchesCombinationWithoutOrder: CombinationMatcherInterface;
   matchesCombination: CombinationMatcherInterface;
   appendItem: (item: string) => void;
   prependItem: (item: string) => void;

@@ -24,7 +24,15 @@ import type {
 import CollectionStateEvent, {
   CollectionStateEventInterface
 } from "./collection-state-event/collection-state-event";
+
 import { StateTransitionsInterface } from "../state-manager/state-manager.types";
+import createObservers from "./create-observers";
+import createCombinations from "./create-combinations";
+import createCollection from "./create-collection";
+import {
+  matchesCombinationWithOrder,
+  matchesCombinationWithoutOrder
+} from "./matches";
 
 class CollectionStateManager {
   public stateManager: AbstractStateManager;
@@ -58,8 +66,8 @@ class CollectionStateManager {
 
     if (states) {
       stateManagerStates = this.createStateManagerStates(states);
-      this.observers = this.createObservers(states);
-      this.combinations = this.createCombinations(states);
+      this.observers = createObservers(states);
+      this.combinations = createCombinations(states);
     } else if (contexts) {
       if (!context) {
         throw new Error(`
@@ -78,8 +86,8 @@ class CollectionStateManager {
       const states = contexts[context];
       this.context = context;
       stateManagerStates = this.createStateManagerStates(states);
-      this.observers = this.createObservers(states);
-      this.combinations = this.createCombinations(states);
+      this.observers = createObservers(states);
+      this.combinations = createCombinations(states);
     } else {
       throw new Error(`
         Failed to create ${name}. 
@@ -87,7 +95,7 @@ class CollectionStateManager {
       `);
     }
 
-    this.collection = this.createCollection(this.combinations);
+    this.collection = createCollection(this.combinations);
     this.currentCombination = this.combinations[initialState];
 
     this.stateManager = new StateManager({
@@ -96,7 +104,11 @@ class CollectionStateManager {
       initialState,
       onSuspense: ({ name }) => {
         this.onSuspense(
-          new CollectionStateEvent(name, this, this.currentCombination)
+          new CollectionStateEvent<CollectionStateManagerInterface>(
+            name,
+            this,
+            this.currentCombination
+          )
         );
       },
       ...stateManagerOptions
@@ -129,18 +141,6 @@ class CollectionStateManager {
 
   get history() {
     return this.stateManager.history;
-  }
-
-  createObservers(
-    states: Array<CollectionStateOptionInterface>
-  ): CollectionStateObserversInterface {
-    return states.reduce(
-      (allObservers, { name, observers }) => ({
-        ...allObservers,
-        [name]: observers
-      }),
-      {}
-    );
   }
 
   createStateManagerStates(
@@ -196,24 +196,6 @@ class CollectionStateManager {
     });
   }
 
-  createCombinations(
-    states: Array<CollectionStateOptionInterface>
-  ): CollectionStateCombinationsInterface {
-    return states.reduce(
-      (combinations, { name, combination }) => ({
-        [name]: combination,
-        ...combinations
-      }),
-      {}
-    );
-  }
-
-  createCollection(
-    combinations: CollectionStateCombinationsInterface
-  ): Set<string> {
-    return new Set(Object.values(combinations).flat());
-  }
-
   setCombination(combination: Array<string>) {
     let found: boolean = false;
 
@@ -242,25 +224,8 @@ class CollectionStateManager {
     if (combination.length !== target.length) return false;
 
     return this.ordered
-      ? this.matchesCombinationWithOrder(combination, target)
-      : this.matchesCombinationWithoutOrder(combination, target);
-  }
-
-  matchesCombinationWithOrder(
-    combination: Array<string>,
-    target: Array<string>
-  ): boolean {
-    return combination.every((value, index) => value == target[index]);
-  }
-
-  matchesCombinationWithoutOrder(
-    combination: Array<string>,
-    target: Array<string>
-  ): boolean {
-    return combination.reduce(
-      (matches, value) => matches && target.includes(value),
-      true
-    );
+      ? matchesCombinationWithOrder(combination, target)
+      : matchesCombinationWithoutOrder(combination, target);
   }
 
   addObserver(state: string, observer: CollectionStateObserverInterface) {
