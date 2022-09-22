@@ -30,7 +30,7 @@ import type {
 class StateManager extends AbstractStateManager {
   readonly name: string;
   protected _current: string;
-  public readonly eventManager: AbstractEventEmitter<
+  protected readonly eventManager: AbstractEventEmitter<
     AbstractStateManager,
     unknown
   >;
@@ -89,7 +89,7 @@ class StateManager extends AbstractStateManager {
   }
 
   set current(state: string) {
-    if (!this.events.includes(state)) {
+    if (!this.states.includes(state)) {
       throw new Error(`
         Failed to set state. State ${state} is not registered.
       `);
@@ -140,12 +140,12 @@ class StateManager extends AbstractStateManager {
     this.eventManager.emit(state);
   }
 
-  get events() {
+  get states() {
     return this.eventManager.events;
   }
 
-  eventIsRegistered(state: string): boolean {
-    return this.events.includes(state);
+  stateIsRegistered(state: string): boolean {
+    return this.states.includes(state);
   }
 
   createEventManager(
