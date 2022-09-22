@@ -266,7 +266,7 @@ describe("CollectionStateManager suspense", () => {
       initialState: "normal",
       states: [...textFormatStates],
       ordered: true,
-      onSuspense: ({ collectionStateManager, combination }) => {
+      onSuspense: ({ subject, combination }) => {
         suspenseCombination = combination;
       }
     });
@@ -283,7 +283,7 @@ describe("CollectionStateManager suspense", () => {
     const textFormat = new CollectionStateManager({
       initialState: "normal",
       states: [...textFormatStates],
-      onSuspense: ({ collectionStateManager, combination }) => {
+      onSuspense: ({ subject, combination }) => {
         suspenseCombination = combination;
       }
     });
@@ -301,7 +301,7 @@ describe("CollectionStateManager suspense", () => {
       initialState: "italic",
       states: [...textFormatStates],
       ordered: true,
-      onSuspense: ({ collectionStateManager, combination }) => {
+      onSuspense: ({ subject, combination }) => {
         suspenseCombination = combination;
       }
     });

@@ -253,8 +253,8 @@ class CollectionStateManager {
   }
 
   notifyObservers(stateEvent: StateEventInterface<AbstractStateManager>) {
-    const { name, stateManager } = stateEvent;
-    const observers = this.observers[stateManager.current];
+    const { name, subject } = stateEvent;
+    const observers = this.observers[subject.current];
 
     if (observers) {
       for (const observer of observers)
@@ -364,7 +364,7 @@ class CollectionStateManager {
   onSuspense(
     collectionStateEvent: CollectionStateEventInterface<CollectionStateManagerInterface>
   ) {
-    const { collectionStateManager, combination } = collectionStateEvent;
+    const { subject, combination } = collectionStateEvent;
 
     throw new Error(`
       Failed to set combination on ${this.name}. 

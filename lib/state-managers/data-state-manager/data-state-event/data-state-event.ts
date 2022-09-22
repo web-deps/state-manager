@@ -1,6 +1,6 @@
 interface DataStateEventInterface<DataStateManagerInterface, DataType> {
   name: string;
-  dataStateManager: DataStateManagerInterface;
+  subject: DataStateManagerInterface;
   data: DataType;
 }
 
@@ -8,16 +8,16 @@ class DataStateEvent<DataStateManagerInterface, DataType>
   implements DataStateEventInterface<DataStateManagerInterface, DataType>
 {
   public readonly name: string;
-  public readonly dataStateManager: DataStateManagerInterface;
+  public readonly subject: DataStateManagerInterface;
   public readonly data: DataType;
 
   constructor(
     name: string,
-    dataStateManager: DataStateManagerInterface,
+    subject: DataStateManagerInterface,
     data: DataType
   ) {
     this.name = name;
-    this.dataStateManager = dataStateManager;
+    this.subject = subject;
     this.data = data;
   }
 }

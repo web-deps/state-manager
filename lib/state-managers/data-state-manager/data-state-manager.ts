@@ -223,8 +223,8 @@ class DataStateManager<DataType>
   }
 
   notifyObservers(stateEvent: StateEventInterface<AbstractStateManager>) {
-    const { name, stateManager } = stateEvent;
-    const observers = this.observers[stateManager.current];
+    const { name, subject } = stateEvent;
+    const observers = this.observers[subject.current];
 
     if (observers) {
       for (const observer of observers) {
