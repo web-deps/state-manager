@@ -74,7 +74,6 @@ interface CollectionStateManagerInterface {
   readonly history: Array<string>;
   readonly context?: string;
   readonly ordered: boolean;
-  readonly fixedSize: boolean;
   readonly size?: number;
   readonly observers: CollectionStateObserversInterface;
   readonly combinations: CollectionStateCombinationsInterface;

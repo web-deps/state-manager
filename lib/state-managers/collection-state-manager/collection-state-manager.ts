@@ -40,7 +40,6 @@ class CollectionStateManager {
   observers: CollectionStateObserversInterface = {};
   public readonly context?: string;
   ordered = false;
-  fixedSize = false;
   size?: number;
   combinations: CollectionStateCombinationsInterface = {};
   collection: Set<string> = new Set();
