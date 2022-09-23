@@ -22,7 +22,7 @@ Extends [StateOptions]().
 
 - `states`:
   - Type: `array`
-  - Description: The [`StateOption`]()s of the state manager.
+  - Description: The [`DataStateOption`]()s of the state manager.
 - `initialData`:
   - Type: `any`
   - Description: The initial data.
@@ -70,6 +70,10 @@ createStateManagerStates(states);
 - `states`:
   - Type: [`StateOptions`]()
   - Description: DataStateManager states.
+
+#### Returns
+
+[`StateOption`]()s.
 
 ### `addObserver`
 
