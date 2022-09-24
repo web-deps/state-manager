@@ -196,6 +196,11 @@ class CollectionStateManager {
   }
 
   setCombination(combination: Array<string>) {
+    if (this.size && combination.length !== this.size) {
+      this.onSuspense(new CollectionStateEvent(this.name, this, combination));
+      return;
+    }
+
     let found: boolean = false;
 
     for (const [state, stateCombination] of Object.entries(this.combinations)) {
