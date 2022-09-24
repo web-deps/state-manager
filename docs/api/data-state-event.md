@@ -1,6 +1,6 @@
 # DataStateEvent
 
-Used to create an event triggered by a state change of DataStateManager.
+Used to create an event triggered by a state change of [DataStateManager](data-state-manager.md).
 
 ## Constructor
 
@@ -16,7 +16,7 @@ constructor(state, dataStateManager, data);
   - Type: `string`
   - Description: The state causing the event.
 - `dataStateManager`:
-  - Type: [`DataStateManager`]()
+  - Type: [`DataStateManager`](data-state-manager.md)
   - Description: The DataStateManager emitting the event.
 - `data`:
   - Type: `any`
@@ -28,7 +28,7 @@ constructor(state, dataStateManager, data);
   - Type: `string`
   - Description: The name of the event. This is one of the states.
 - `subject`:
-  - Type: [`DataStateManager`]()
+  - Type: [`DataStateManager`](data-state-manager.md)
   - Description: The state manager emitting the event.
 - `data`:
   - Type: `any`

@@ -1,6 +1,6 @@
 # StateEvent
 
-An event fired before and after a state transition. It is passed as the only parameter to state observers.
+An event fired before and after a state transition of [StateManager](state-manager.md). It is passed as the only parameter to state observers.
 
 ## Constructor
 
@@ -16,7 +16,7 @@ constructor(name, stateManager);
   - Type: `string`
   - Description: The name of the state.
 - `stateManager`:
-  - Type: `StateManager`
+  - Type: [`StateManager`](state-manager.md)
   - Description: The state manager emitting the event.
 
 ## Properties
@@ -25,7 +25,7 @@ constructor(name, stateManager);
   - Type: `string`
   - Description: The name of the state.
 - `subject`:
-  - Type: `StateManager`
+  - Type: [`StateManager`](state-manager.md)
   - Description: The state manager emitting the event.
 - `event`:
   - Type: `object`

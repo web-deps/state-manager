@@ -1,6 +1,6 @@
 # CollectionStateEvent
 
-Used to create an event triggered by a state change or suspense of [`CollectionStateManager`]().
+Used to create an event triggered by a state change or suspense of [`CollectionStateManager`](collection-state-manager.md).
 
 ## Constructor
 
@@ -16,7 +16,7 @@ constructor(state, collectionStateManager, data);
   - Type: `string`
   - Description: The state causing the event.
 - `collectionStateManager`:
-  - Type: [`CollectionStateManager`]()
+  - Type: [`CollectionStateManager`](collection-state-manager.md)
   - Description: The CollectionStateManager emitting the event.
 - `combination`:
   - Type: `any`
@@ -28,7 +28,7 @@ constructor(state, collectionStateManager, data);
   - Type: `string`
   - Description: The name of the event. This is one of the states.
 - `subject`:
-  - Type: [`DataStateManager`]()
+  - Type: [`CollectionStateManager`](collection-state-manager.md)
   - Description: The state manager emitting the event.
 - `combination`:
   - Type: `any`
