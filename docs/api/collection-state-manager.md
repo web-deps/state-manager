@@ -66,7 +66,7 @@ collectionStateObserver(collectionStateEvent);
   - Type: [`CollectionStateEvent`](collection-state-event.md)
   - Description: The event fired when the state transitions.
 
-##### collectionStateTransitions
+##### `collectionStateTransitions`
 
 Specifies the transitions allowed for a particular state. It has the following properties:
 

@@ -76,7 +76,7 @@ stateObserver(stateEvent);
   - Type: [`StateEvent`](state-event.md)
   - Description: The event fired when the state transitions.
 
-##### stateTransitions
+##### `stateTransitions`
 
 Specifies the transitions allowed for a particular state. It has the following properties:
 
