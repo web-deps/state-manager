@@ -1,6 +1,6 @@
 # StateManager
 
-Used for simple state management. It is ideal for states that depend on a finite set of values. For example types of alert messages ('success', 'warning', 'error', 'info').
+Used for simple state management. It is ideal for states that depend on a finite set of values. For example types of alert messages ('success', 'warning', 'error', 'info'). You can manage the state of an alert message by taking each type as a state.
 
 ## Constructor
 
@@ -26,7 +26,7 @@ constructor(options);
   - Description: The initial state of the state manager. This is the state to which StateManager.current will be set initially.
 - `states`: (optional)
   - Type: `array`
-  - Description: The list of [StateOption]s. It contains the name of the state, observers, and transitions. You need to provide this option if you haven't provided options.contexts.
+  - Description: The list of [StateOption]()s. It contains the name of the state, observers, and transitions. You need to provide this option if you haven't provided options.contexts.
 - `contexts`: (optional)
   - Type: `object`
   - Description: Contains [states] under different contexts. Each property key is the name of the context and the value is an array of [StateOption]s. StateManager only uses states that match the context specified. You need to provide this option if you haven't provided option.states. You need to provide the option options.context if you have provided this option.
@@ -45,6 +45,61 @@ constructor(options);
     - Type: [`StateEvent`]
     - Description: The state event emitted due to the state transition. StateEvent.name will be the name of the state that you attempted to change to.
   - Returns: `undefined`
+
+##### `StateOption`
+
+An object containing the options for each state.
+
+###### Properties
+
+- `name`:
+  - Type: `string`
+  - Description: The name of the state.
+- `observers`:
+  - Type: `array`
+  - Description: The observers for that event. See [`StateObserver`]() for more.
+- `transitions`:
+  - Type: `object`
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`StateTransitions`]() for more.
+
+##### `stateObserver`
+
+###### Signature
+
+```js
+stateObserver(stateEvent);
+```
+
+###### Params
+
+- `stateEvent`:
+  - Type: [`StateEvent`](state-event.md)
+  - Description: The event fired when the state transitions.
+
+##### stateTransitions
+
+Specifies the transitions allowed for a particular state. It has the following properties:
+
+- `from`:
+  - Type: `object`
+  - Description: Specifies the states from which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states from which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`stateObserver`](#stateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
+- `to`:
+  - Type: `object`
+  - Description: Specifies the states to which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states to which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`stateObserver`](#stateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
 
 ## Properties
 

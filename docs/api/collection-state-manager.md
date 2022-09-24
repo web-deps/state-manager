@@ -36,6 +36,61 @@ Extends [`StateOptions`]()
   - Type: `function`
   - Description: The callback called every time the state manager is in put in suspense. The manager can be put in suspense when an forbidden transition has been attempted. Or when an forbidden combination has been created.
 
+##### `CollectionStateOption`
+
+An object containing the options for each state.
+
+###### Properties
+
+- `name`:
+  - Type: `string`
+  - Description: The name of the state.
+- `observers`:
+  - Type: `array`
+  - Description: The observers for that event. See [`collectionStateObserver`]() for more.
+- `transitions`:
+  - Type: `object`
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`CollectionStateTransitions`]() for more.
+
+##### `collectionStateObserver`
+
+###### Signature
+
+```js
+collectionStateObserver(collectionStateEvent);
+```
+
+###### Params
+
+- `collectionStateEvent`:
+  - Type: [`CollectionStateEvent`](collection-state-event.md)
+  - Description: The event fired when the state transitions.
+
+##### collectionStateTransitions
+
+Specifies the transitions allowed for a particular state. It has the following properties:
+
+- `from`:
+  - Type: `object`
+  - Description: Specifies the states from which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states from which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`collectionStateObserver`](#collectionstateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
+- `to`:
+  - Type: `object`
+  - Description: Specifies the states to which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states to which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`collectionStateObserver`](#collectionstateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
+
 ## Properties
 
 Extends [StateManager]().

@@ -36,6 +36,61 @@ Extends [StateOptions]().
   - Type: `function`
   - Description: The callback called every time the state manager is in put in suspense. The manager can be put in suspense when an illegal transition has been attempted.
 
+##### `DataStateOption`
+
+An object containing the options for each state.
+
+###### Properties
+
+- `name`:
+  - Type: `string`
+  - Description: The name of the state.
+- `observers`:
+  - Type: `array`
+  - Description: The observers for that event. See [`dataStateObserver`]() for more.
+- `transitions`:
+  - Type: `object`
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`DataStateTransitions`]() for more.
+
+##### `dataStateObserver`
+
+###### Signature
+
+```js
+dataStateObserver(dataStateEvent);
+```
+
+###### Params
+
+- `dataStateEvent`:
+  - Type: [`DataStateEvent`](data-state-event.md)
+  - Description: The event fired when the state transitions.
+
+##### dataStateTransitions
+
+Specifies the transitions allowed for a particular state. It has the following properties:
+
+- `from`:
+  - Type: `object`
+  - Description: Specifies the states from which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states from which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`dataStateObserver`](#datastateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
+- `to`:
+  - Type: `object`
+  - Description: Specifies the states to which the current state can transition. It also provides the observers for that transition.
+  - Properties:
+    - `states`:
+      - Type: `array` of `string`s
+      - Description: A list of states to which the current state can transition.
+    - `observers`:
+      - Type: `array` of [`dataStateObserver`](#datastateobserver)s
+      - Description: A list of observers for the transition. The observers are called every time the transition occurs.
+
 ## Properties
 
 Extends [StateManager]().
