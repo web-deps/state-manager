@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mishieck/state-manager.git"
+    "url": "git+https://github.com/web-deps/state-manager.git"
   },
   "keywords": [
     "state",
@@ -37,9 +37,9 @@
   "author": "Mishieck Mwale",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Mishieck/state-manager/issues"
+    "url": "https://github.com/web-deps/state-manager/issues"
   },
-  "homepage": "https://github.com/Mishieck/state-manager#readme",
+  "homepage": "https://github.com/web-deps/state-manager#readme",
   "devDependencies": {
     "@types/node": "^18.7.15",
     "@vitest/coverage-c8": "^0.23.1",
