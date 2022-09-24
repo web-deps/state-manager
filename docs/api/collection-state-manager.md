@@ -93,7 +93,7 @@ Specifies the transitions allowed for a particular state. It has the following p
 
 ## Properties
 
-Extends [StateManager]().
+Extends [StateManager](state-manager.md).
 
 - `currentCombination`:
   - Type: `array` of `string`s
@@ -122,9 +122,9 @@ Extends [StateManager]().
 
 ## Methods
 
-#### `createStateManagerStates`
+### `createStateManagerStates`
 
-Creates states for [StateManager](state-manager) from the states for [CollectionStateManager](#datastatemanager).
+Creates states for [StateManager](state-manager.md) from the states for [CollectionStateManager](#collectionstatemanager).
 
 #### Signature
 
