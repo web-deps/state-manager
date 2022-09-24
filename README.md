@@ -6,13 +6,13 @@ A JavaScript library for state management and automation. It can be used on both
 
 ### NPM
 
-```bash
+```sh
 npm install @web-deps/state-manager
 ```
 
 ### Yarn
 
-```bash
+```sh
 yarn add @web-deps/state-manager
 ```
 
@@ -92,11 +92,11 @@ alertType.current = "waring";
 
 ## API
 
-- [CollectionStateEvent]
-- [CollectionStateManager]
-- [DataStateEvent]
-- [DataStateManager]
-- [StateEvent]
+- [CollectionStateEvent](docs/api/collection-state-event.md)
+- [CollectionStateManager](docs/api/collection-state-manager.md)
+- [DataStateEvent](docs/api/data-state-event.md)
+- [DataStateManager](docs/api/data-state-manager.md)
+- [StateEvent](docs/api/state-event.md)
 - [StateManager](docs/api/state-manager.md)
 
 ## License
