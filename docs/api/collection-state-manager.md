@@ -18,11 +18,11 @@ constructor(options);
 
 #### `options`
 
-Extends [`StateOptions`]()
+Extends [`StateOptions`](state-manager.md#constructor)
 
 - `states`:
   - Type: `array`
-  - Description: The [`CollectionStateOption`]()s of the state manager.
+  - Description: The [`CollectionStateOption`](#collectionstateoption)s of the state manager.
 - `contexts`:
   - Type: `object`
   - Description: Contains the contexts in which the state manager can be. Each key is the name of the context and the value is the states in that context.
@@ -47,10 +47,10 @@ An object containing the options for each state.
   - Description: The name of the state.
 - `observers`:
   - Type: `array`
-  - Description: The observers for that event. See [`collectionStateObserver`]() for more.
+  - Description: The observers for that event. See [`collectionStateObserver`](#collectionstateobserver) for more.
 - `transitions`:
   - Type: `object`
-  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`CollectionStateTransitions`]() for more.
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`CollectionStateTransitions`](#collectionstatetransitions) for more.
 
 ##### `collectionStateObserver`
 
@@ -117,14 +117,14 @@ Extends [StateManager]().
   - Type: `boolean`
   - Description: Indicates whether or not the CollectionStateManager is in suspense.
 - `stateManager`:
-  - Type: [`StateManager`]()
+  - Type: [`StateManager`](state-manager)
   - Description: The state manager used for managing the state transitions.
 
 ## Methods
 
 #### `createStateManagerStates`
 
-Creates states for [StateManager]() from the states for [CollectionStateManager](#datastatemanager).
+Creates states for [StateManager](state-manager) from the states for [CollectionStateManager](#datastatemanager).
 
 #### Signature
 
@@ -135,7 +135,7 @@ createStateManagerStates(states);
 #### Params
 
 - `states`:
-  - Type: [`StateOptions`]()
+  - Type: [`StateOptions`](state-manager.md#constructor)
   - Description: CollectionStateManager states.
 
 #### Returns
@@ -168,7 +168,7 @@ Checks whether or not a given combination matches any of the combinations for st
 
 ### `appendItem`
 
-Appends a value to the [`currentCombination`]() of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Appends a value to the current combination of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -184,7 +184,7 @@ appendItem(item);
 
 ### `removeItem`
 
-Removes a value from the [`currentCombination`]() of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Removes a value from the current combination of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -200,7 +200,7 @@ removeItem(item);
 
 ### `prependItem`
 
-Prepends a value to the [`currentCombination`]() of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Prepends a value to the current combination of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -216,7 +216,7 @@ prependItem(item);
 
 ### `replaceItem`
 
-Replaces a value in the [`currentCombination`]() of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Replaces a value in the current combination of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -232,7 +232,7 @@ replaceItem(item);
 
 ### `popItem`
 
-Removes the last value in the [`currentCombination`]() of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Removes the last value in the current combination of the state manager. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -242,7 +242,7 @@ popItem();
 
 ### `shiftItems`
 
-Removes the last value in the [`currentCombination`]() of the state manager. If a value has been provided the last value is replaced with the given value. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Removes the last value in the current combination of the state manager. If a value has been provided the last value is replaced with the given value. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -258,7 +258,7 @@ shiftItems(item);
 
 ### `unshiftItems`
 
-Removes the first value from the [`currentCombination`]() of the state manager. If a value is provided, the removed value will be replaced with the given value. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
+Removes the first value from the current combination of the state manager. If a value is provided, the removed value will be replaced with the given value. If the new combination matches a combination for a particular state, the state manager transitions to the matching state.
 
 #### Signature
 
@@ -312,4 +312,16 @@ removeObserver(state, observer);
 
 ### `notifyObservers`
 
-Same signature as [StateManager.notifyObservers](). But, it notifies the observers of CollectionStateManager.
+Notifies [collectionStateObserver](#collectionstateobserver)s on a state transition.
+
+#### Signature
+
+```js
+notifyObservers(collectionStateEvent);
+```
+
+#### Params
+
+- `collectionStateEvent`:
+  - Type: [`CollectionStateEvent`](collection-state-event.md)
+  - Description: An event emitted due to a state transition.

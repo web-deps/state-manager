@@ -18,11 +18,11 @@ constructor(options);
 
 #### `options`
 
-Extends [StateOptions]().
+Extends [StateOptions](state-manager.md#constructor).
 
 - `states`:
   - Type: `array`
-  - Description: The [`DataStateOption`]()s of the state manager.
+  - Description: The [`DataStateOption`](#datastateoption)s of the state manager.
 - `initialData`:
   - Type: `any`
   - Description: The initial data.
@@ -47,10 +47,10 @@ An object containing the options for each state.
   - Description: The name of the state.
 - `observers`:
   - Type: `array`
-  - Description: The observers for that event. See [`dataStateObserver`]() for more.
+  - Description: The observers for that event. See [`dataStateObserver`](#datastateobserver) for more.
 - `transitions`:
   - Type: `object`
-  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`DataStateTransitions`]() for more.
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`DataStateTransitions`](#datastatetransitions) for more.
 
 ##### `dataStateObserver`
 
@@ -93,7 +93,7 @@ Specifies the transitions allowed for a particular state. It has the following p
 
 ## Properties
 
-Extends [StateManager]().
+Extends [StateManager](state-manager.md).
 
 - `currentData`:
   - Type: `any`
@@ -105,14 +105,14 @@ Extends [StateManager]().
   - Type: `object`
   - Description: The list of observers for states. The keys are the states, and the values are arrays of all observers for the state specified in the corresponding key. The observers are the ones passed in `options.states` or `options.contexts`.
 - `stateManager`:
-  - Type: [`StateManager`]()
+  - Type: [`StateManager`](state-manager.md)
   - Description: The state manager used for managing the state transitions.
 
 ### Methods
 
 #### `createStateManagerStates`
 
-Creates states for [StateManager]() from the states for [DataStateManager](#datastatemanager).
+Creates states for [StateManager](state-manager.md) from the states for [DataStateManager](#datastatemanager).
 
 #### Signature
 
@@ -123,12 +123,12 @@ createStateManagerStates(states);
 #### Params
 
 - `states`:
-  - Type: [`StateOptions`]()
+  - Type: `array` of [`DataStateOption`](#datastateoption)s
   - Description: DataStateManager states.
 
 #### Returns
 
-[`StateOption`]()s.
+An `array` of [`StateOption`](state-manager.md#constructor)s.
 
 ### `addObserver`
 
@@ -170,7 +170,19 @@ removeObserver(state, observer);
 
 ### `notifyObservers`
 
-Same signature as [StateManager.notifyObservers](). But, it notifies the observers of DataStateManager.
+Notifies [dataStateObserver](#datastateobserver)s on a state transition.
+
+#### Signature
+
+```js
+notifyObservers(dataStateEvent);
+```
+
+#### Params
+
+- `dataStateEvent`:
+  - Type: [`DataStateEvent`](data-state-event.md)
+  - Description: An event emitted due to a state transition.
 
 ### `update`
 
@@ -217,5 +229,5 @@ onSuspense(dataStateEvent);
 #### Params
 
 - `dataStateEvent`:
-  - Type: [`DataStateEvent`]()
+  - Type: [`DataStateEvent`](data-state-event.md)
   - Description: The event emitted due to the suspense.

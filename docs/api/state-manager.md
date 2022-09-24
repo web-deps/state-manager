@@ -26,7 +26,7 @@ constructor(options);
   - Description: The initial state of the state manager. This is the state to which StateManager.current will be set initially.
 - `states`: (optional)
   - Type: `array`
-  - Description: The list of [StateOption]()s. It contains the name of the state, observers, and transitions. You need to provide this option if you haven't provided options.contexts.
+  - Description: The list of [StateOption](#stateoption)s. It contains the name of the state, observers, and transitions. You need to provide this option if you haven't provided options.contexts.
 - `contexts`: (optional)
   - Type: `object`
   - Description: Contains [states] under different contexts. Each property key is the name of the context and the value is an array of [StateOption]s. StateManager only uses states that match the context specified. You need to provide this option if you haven't provided option.states. You need to provide the option options.context if you have provided this option.
@@ -42,7 +42,7 @@ constructor(options);
   - Signature: `onSuspense(stateEvent)`
   - Params:
     - `stateEvent`:
-    - Type: [`StateEvent`]
+    - Type: [`StateEvent`](state-event.md)
     - Description: The state event emitted due to the state transition. StateEvent.name will be the name of the state that you attempted to change to.
   - Returns: `undefined`
 
@@ -57,10 +57,10 @@ An object containing the options for each state.
   - Description: The name of the state.
 - `observers`:
   - Type: `array`
-  - Description: The observers for that event. See [`StateObserver`]() for more.
+  - Description: The observers for that event. See [`stateObserver`](#stateobserver) for more.
 - `transitions`:
   - Type: `object`
-  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`StateTransitions`]() for more.
+  - Description: The transitions permitted. If a state has transitions specified, any transition attempted that has not been specified will put the state manager in suspense. See [`StateTransitions`](#statetransitions) for more.
 
 ##### `stateObserver`
 
